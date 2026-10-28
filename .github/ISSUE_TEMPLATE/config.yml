@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: 📖 Documentation
+    url: https://github.com/matesofmate/.github/blob/main/CONTRIBUTING.md
+    about: Read the contributing guide and extension documentation
+  - name: 💬 Community
+    url: https://github.com/matesofmate
+    about: Browse other MatesOfMate extensions and community resources

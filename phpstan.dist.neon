@@ -1,0 +1,17 @@
+includes:
+    - vendor/phpstan/phpstan-phpunit/extension.neon
+
+parameters:
+    # Run at maximum strictness level
+    level: 8
+
+    # Paths to analyze
+    paths:
+        - src
+        - tests
+
+    # Don't treat PHPDoc types as certain to catch type issues
+    treatPhpDocTypesAsCertain: false
+
+    # Add ignored errors here if needed
+    ignoreErrors:

@@ -1,0 +1,5 @@
+# CODEOWNERS - Define code ownership for automatic review requests
+# When creating your own extension, add your GitHub username after @wachterjohannes
+
+# Default owners for everything in the repo
+* @wachterjohannes
