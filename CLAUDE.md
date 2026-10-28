@@ -34,11 +34,12 @@ vendor/bin/mate debug:extensions
 
 ## Package Structure
 
-- `src/Capability/ExampleTool.php` demonstrates a tool
-- `src/Capability/ExampleResource.php` demonstrates a resource
+- `src/Capability/` holds the tools (`RunTool`, `EscapedTool`, `MutantTool`, `SummaryTool`, `DescribeMutatorTool`) and `ConfigResource`
+- `src/Runner/`, `src/Parser/`, `src/Cache/`, `src/Config/`, `src/Formatter/` hold the plumbing behind the capabilities
+- Infection has no CLI switch for its JSON log, so `InfectionRunner` writes a temporary config in the project root (it must sit there so `phpunit.xml` resolves) and deletes it afterwards
 - `config/config.php` registers services
-- `INSTRUCTIONS.md` demonstrates concise agent guidance
-- `skills/example-workflow/SKILL.md` demonstrates an Agent Skill
+- `INSTRUCTIONS.md` maps user intents to the tools
+- `skills/infection-mutation-testing/SKILL.md` is the extension's Agent Skill
 
 ## Skills
 
@@ -70,6 +71,7 @@ MatesOfMate house style:
 - no `declare(strict_types=1)` in examples
 - no `final` classes in examples
 - file headers stay consistent with the org
+- comments are lowercase and not prose: assume the reader understands the code and only explain what is not obvious
 
 Current Mate platform capability:
 
@@ -83,6 +85,8 @@ The template must be clean out of the box.
 
 - `composer test` must pass
 - `composer lint` must pass
+- `vendor/bin/infection` must report no escaped mutants (`minMsi` and `minCoveredMsi` are 100)
+- CI (`.github/workflows/ci.yml`) runs tests on PHP 8.2-8.5 with lowest and highest dependencies, plus lint and mutation tests on PHP 8.5
 - docs must match the actual file layout and commands
 
 ## Authoring Guidance
