@@ -4,5 +4,6 @@
 /.php-cs-fixer.cache
 /coverage/
 /var/
+/.infection.mate.*
 /.idea/
 /.vscode/

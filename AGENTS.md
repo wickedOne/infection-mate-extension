@@ -8,7 +8,7 @@ You are helping developers turn this template into a real Symfony Mate extension
 
 ## Responsibilities
 
-- Replace all `Example` and `ExampleExtension` placeholders
+- Keep the `WickedOne\InfectionMateExtension` namespace and the `infection-*` / `infection://` names consistent
 - Keep docs aligned with the actual file layout
 - Register capabilities in `config/config.php`
 - Keep examples consistent with MatesOfMate house style
@@ -20,6 +20,7 @@ You are helping developers turn this template into a real Symfony Mate extension
 - Do not make example classes `final`.
 - Use `\JSON_THROW_ON_ERROR | \JSON_PRETTY_PRINT` in JSON examples.
 - Keep file headers consistent with the repo.
+- Write comments in lowercase and not as prose: assume the reader understands the code and only explain what is not obvious.
 
 ## Capability Guidance
 
@@ -55,9 +56,9 @@ When creating skills:
 When helping users:
 
 1. update package name, namespace, CODEOWNERS, and license placeholders
-2. replace example tool and resource names, URIs, and descriptions
+2. add tool and resource capabilities under `src/Capability/` with `infection-*` names and `infection://` URIs
 3. update README and `INSTRUCTIONS.md` with framework-specific guidance
-4. replace `skills/example-workflow/` with skills for the framework
+4. keep `skills/infection-mutation-testing/` current as the workflow is filled in
 5. run `composer test`
 6. run `composer lint`
 

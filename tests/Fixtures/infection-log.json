@@ -1,0 +1,95 @@
+{
+    "stats": {
+        "totalMutantsCount": 6,
+        "killedCount": 2,
+        "killedByStaticAnalysisCount": 0,
+        "notCoveredCount": 1,
+        "escapedCount": 2,
+        "errorCount": 0,
+        "syntaxErrorCount": 0,
+        "skippedCount": 0,
+        "ignoredCount": 0,
+        "timeOutCount": 1,
+        "msi": 50,
+        "mutationCodeCoverage": 83.33,
+        "coveredCodeMsi": 60
+    },
+    "escaped": [
+        {
+            "mutator": {
+                "mutatorName": "GreaterThanOrEqualTo",
+                "originalSourceCode": "        if ($value >= $this->max) {\n            throw new \\RangeException('Too large');\n        }\n",
+                "mutatedSourceCode": "        if ($value > $this->max) {\n            throw new \\RangeException('Too large');\n        }\n",
+                "originalFilePath": "/project/src/Calc.php",
+                "originalStartLine": 12
+            },
+            "diff": "--- Original\n+++ New\n@@ @@\n-        if ($value >= $this->max) {\n+        if ($value > $this->max) {\n",
+            "processOutput": "PHPUnit 10.5.0\n\nFAILURES!\nTests: 4, Assertions: 4, Failures: 0.\n"
+        },
+        {
+            "mutator": {
+                "mutatorName": "Increment",
+                "originalSourceCode": "        $count++;\n",
+                "mutatedSourceCode": "        --$count;\n",
+                "originalFilePath": "/project/src/Str/Slugger.php",
+                "originalStartLine": 27
+            },
+            "diff": "--- Original\n+++ New\n@@ @@\n-        $count++;\n+        --$count;\n",
+            "processOutput": "PHPUnit 10.5.0\n\nOK (3 tests, 3 assertions)\n"
+        }
+    ],
+    "timeouted": [
+        {
+            "mutator": {
+                "mutatorName": "WhileLoopNegation",
+                "originalSourceCode": "        while ($pos < $length) {\n",
+                "mutatedSourceCode": "        while (!($pos < $length)) {\n",
+                "originalFilePath": "/project/src/Str/Slugger.php",
+                "originalStartLine": 41
+            },
+            "diff": "--- Original\n+++ New\n@@ @@\n-        while ($pos < $length) {\n+        while (!($pos < $length)) {\n",
+            "processOutput": "Timeout after 10 seconds\n"
+        }
+    ],
+    "killed": [
+        {
+            "mutator": {
+                "mutatorName": "Plus",
+                "originalSourceCode": "        return $a + $b;\n",
+                "mutatedSourceCode": "        return $a - $b;\n",
+                "originalFilePath": "/project/src/Calc.php",
+                "originalStartLine": 8
+            },
+            "diff": "--- Original\n+++ New\n@@ @@\n-        return $a + $b;\n+        return $a - $b;\n",
+            "processOutput": "FAILURES!\nTests: 4, Assertions: 4, Failures: 1.\n"
+        },
+        {
+            "mutator": {
+                "mutatorName": "ReturnRemoveNonVoid",
+                "originalSourceCode": "        return $this->name;\n",
+                "mutatedSourceCode": "        $this->name;\n",
+                "originalFilePath": "/project/src/Str/Slugger.php",
+                "originalStartLine": 19
+            },
+            "diff": "--- Original\n+++ New\n@@ @@\n-        return $this->name;\n+        $this->name;\n",
+            "processOutput": "FAILURES!\nTests: 3, Assertions: 3, Failures: 1.\n"
+        }
+    ],
+    "killedByStaticAnalysis": [],
+    "errored": [],
+    "syntaxErrors": [],
+    "uncovered": [
+        {
+            "mutator": {
+                "mutatorName": "TrueValue",
+                "originalSourceCode": "        return true;\n",
+                "mutatedSourceCode": "        return false;\n",
+                "originalFilePath": "/project/src/Calc.php",
+                "originalStartLine": 33
+            },
+            "diff": "--- Original\n+++ New\n@@ @@\n-        return true;\n+        return false;\n",
+            "processOutput": ""
+        }
+    ],
+    "ignored": []
+}

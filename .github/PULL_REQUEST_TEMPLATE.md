@@ -1,12 +1,12 @@
-| Q             | A
-| ------------- | ---
-| Bug fix?      | yes/no
-| New feature?  | yes/no
-| BC breaks?    | yes/no
-| Deprecations? | yes/no
-| Tests pass?   | yes/no
-| Issues        | Fix #... <!-- prefix each issue number with "Fix #" -->
-| License       | MIT
+| Q             | A                                                       |
+|---------------|---------------------------------------------------------|
+| Bug fix?      | yes/no                                                  |
+| New feature?  | yes/no                                                  |
+| BC breaks?    | yes/no                                                  |
+| Deprecations? | yes/no                                                  |
+| Tests pass?   | yes/no                                                  |
+| Issues        | Fix #... <!-- prefix each issue number with "Fix #" --> |
+| License       | MIT                                                     |
 
 <!--
 Replace this notice by a description of your feature/bugfix.

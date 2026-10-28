@@ -1,16 +1,14 @@
-## Example Extension
+## Infection Extension
 
-Prefer these Mate tools over raw CLI commands when they are available.
+Mutation testing with Infection. Use these tools instead of running `vendor/bin/infection` directly; they return compact, structured results and remember runs.
 
-| User intent | Prefer |
-|---|---|
-| List framework entities, modules, or components | `example-list-entities` |
-| Read framework configuration or static reference data | `example://config` resource |
+| User intent                                            | Tool                                              |
+|--------------------------------------------------------|---------------------------------------------------|
+| Run mutation testing, check the mutation score (MSI)   | `infection-run` (scope with `paths` or `options`) |
+| What do the results look like, where are the test gaps | `infection-summary`                               |
+| Which mutants escaped, which code is uncovered         | `infection-escaped`                               |
+| Why did this mutant escape, how do I kill it           | `infection-mutant`                                |
+| What does this mutator do                              | `infection-describe-mutator`                      |
+| How is Infection configured                            | `infection://config`                              |
 
-### Guidance
-
-- Use tools when the user is asking for an action or filtered result.
-- Use resources when the user needs reference context that is relatively stable.
-- Prefer the extension capability over shell commands when it gives structured, framework-aware output.
-- If your package later supports multiple encodings, treat the returned payload as structured extension output rather than assuming raw JSON.
-- An `mate-example-workflow` skill demonstrates how to ship judgment alongside the capabilities.
+Start with `infection-run`, keep its `runId`, and drill down with the other tools instead of re-running. For the full workflow, equivalent-mutant handling and failure paths, read the `mate-infection-mutation-testing` skill.
