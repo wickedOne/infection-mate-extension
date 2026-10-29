@@ -34,7 +34,7 @@ jobs:
                   coverage: none
                   tools: composer:v2
 
-            - uses: ramsey/composer-install@v3
+            - uses: ramsey/composer-install@4.0.0
               with:
                   dependency-versions: ${{ matrix.dependencies }}
                   composer-options: --prefer-stable
@@ -53,7 +53,7 @@ jobs:
                   coverage: none
                   tools: composer:v2
 
-            - uses: ramsey/composer-install@v3
+            - uses: ramsey/composer-install@4.0.0
 
             - run: composer lint
 
@@ -71,6 +71,6 @@ jobs:
                   coverage: pcov
                   tools: composer:v2
 
-            - uses: ramsey/composer-install@v3
+            - uses: ramsey/composer-install@4.0.0
 
             - run: vendor/bin/infection --threads=max --no-progress --no-interaction --no-ansi --logger-github
