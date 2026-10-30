@@ -8,14 +8,14 @@
  * file that was distributed with this source code.
  */
 
-namespace WickedOne\InfectionMateExtension\Config;
+namespace WickedOne\InfectionMateExtension\Discovery;
 
 use ColinODell\Json5\Json5Decoder;
 
 /**
  * @author wicliff wolda <wicliff.wolda@gmail.com>
  */
-class ConfigurationDetector
+class ConfigurationDiscovery
 {
     private const array CANDIDATES = ['infection.json5', 'infection.json', 'infection.json5.dist', 'infection.json.dist'];
 

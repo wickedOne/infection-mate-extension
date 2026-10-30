@@ -10,7 +10,7 @@
 
 namespace WickedOne\InfectionMateExtension\Runner;
 
-use WickedOne\InfectionMateExtension\Config\ConfigurationDetector;
+use WickedOne\InfectionMateExtension\Discovery\ConfigurationDiscovery;
 
 /**
  * @author wicliff wolda <wicliff.wolda@gmail.com>
@@ -23,7 +23,7 @@ class InfectionRunner
 
     public function __construct(
         private readonly string $projectRoot,
-        private readonly ConfigurationDetector $configuration,
+        private readonly ConfigurationDiscovery $configuration,
         private readonly ProcessExecutor $executor,
         private readonly int $defaultTimeout = 1800,
     ) {

@@ -12,7 +12,7 @@ namespace WickedOne\InfectionMateExtension\Capability;
 
 use Symfony\AI\Mate\Attribute\MateResource;
 use Symfony\AI\Mate\Encoding\ResponseEncoder;
-use WickedOne\InfectionMateExtension\Config\ConfigurationDetector;
+use WickedOne\InfectionMateExtension\Discovery\ConfigurationDiscovery;
 
 /**
  * @author wicliff wolda <wicliff.wolda@gmail.com>
@@ -20,7 +20,7 @@ use WickedOne\InfectionMateExtension\Config\ConfigurationDetector;
 class ConfigResource
 {
     public function __construct(
-        private readonly ConfigurationDetector $configuration,
+        private readonly ConfigurationDiscovery $configuration,
     ) {
     }
 

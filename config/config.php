@@ -16,12 +16,12 @@ use WickedOne\InfectionMateExtension\Capability\EscapedTool;
 use WickedOne\InfectionMateExtension\Capability\MutantTool;
 use WickedOne\InfectionMateExtension\Capability\RunTool;
 use WickedOne\InfectionMateExtension\Capability\SummaryTool;
-use WickedOne\InfectionMateExtension\Config\ConfigurationDetector;
+use WickedOne\InfectionMateExtension\Discovery\ConfigurationDiscovery;
 use WickedOne\InfectionMateExtension\Filesystem\PathResolver;
 use WickedOne\InfectionMateExtension\Formatter\ResultFormatter;
 use WickedOne\InfectionMateExtension\Parser\JsonLogParser;
-use WickedOne\InfectionMateExtension\Runner\ArgumentResolver;
-use WickedOne\InfectionMateExtension\Runner\InfectionCapabilities;
+use WickedOne\InfectionMateExtension\Runner\Argument\ArgumentResolver;
+use WickedOne\InfectionMateExtension\Runner\Argument\InfectionCapabilities;
 use WickedOne\InfectionMateExtension\Runner\InfectionRunner;
 use WickedOne\InfectionMateExtension\Runner\ProcessExecutor;
 
@@ -33,7 +33,7 @@ return static function (ContainerConfigurator $container): void {
 
     $services->set(PathResolver::class);
     $services->set(ProcessExecutor::class);
-    $services->set(ConfigurationDetector::class)
+    $services->set(ConfigurationDiscovery::class)
         ->arg('$projectRoot', '%mate.root_dir%');
     $services->set(InfectionCapabilities::class)
         ->arg('$projectRoot', '%mate.root_dir%');

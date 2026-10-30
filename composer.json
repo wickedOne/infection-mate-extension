@@ -15,16 +15,17 @@
         "ext-mbstring": "*",
         "colinodell/json5": "^3.0",
         "symfony/ai-mate": "^0.13 || ^0.14 || ^1.0.0-BETA1 || dev-main",
-        "symfony/process": "^5.4 || ^6.4 || ^7.3 || ^8.0"
+        "symfony/process": "^5.4 || ^6.4 || ^7.3 || ^8.1.10"
     },
     "require-dev": {
-        "friendsofphp/php-cs-fixer": "^3.0",
+        "friendsofphp/php-cs-fixer": "^3.95.27",
+        "helgesverre/toon": "^3.2",
         "infection/infection": "dev-add-json-logger-cli as 0.35.8",
         "mikey179/vfsstream": "^1.6.12",
-        "phpstan/phpstan": "^2.0",
-        "phpstan/phpstan-phpunit": "^2.0",
-        "phpunit/phpunit": "^10.0 || ^11.0 || ^12.0 || ^13.0",
-        "rector/rector": "^2.0"
+        "phpstan/phpstan": "^2.3.4",
+        "phpstan/phpstan-phpunit": "^2.1.1",
+        "phpunit/phpunit": "^10.0 || ^11.0 || ^12.0 || ^13.4.5",
+        "rector/rector": "^2.8.3"
     },
     "suggest": {
         "infection/infection": "Required in the project under test: the tools run its vendor/bin/infection binary (or a global infection)"
@@ -55,7 +56,7 @@
         }
     },
     "scripts": {
-        "test": "vendor/bin/phpunit",
+        "test": "vendor/bin/infection",
         "lint": [
             "@composer validate --strict",
             "vendor/bin/rector process --dry-run",
