@@ -35,6 +35,10 @@ vendor/bin/mate resources:read infection://config
 
 The extension also ships the `mate-infection-mutation-testing` skill with the workflow, how to read each bucket, and the rules for equivalent mutants and ignore annotations.
 
+## Output format
+
+Responses are JSON. When [`helgesverre/toon`](https://github.com/HelgeSverre/toon-php) is installed in the project (`composer require --dev helgesverre/toon`), Mate encodes them as the more token-efficient TOON format instead. There is no setting: uninstall the package to get JSON back.
+
 ## How it works
 
 `infection-run` passes `--logger-json=<file>` to Infection and reads that file back, so your configuration is used as is and never copied or modified. The file is a short-lived `.infection.mate.<token>.log.json` in the project root, deleted after every run. This needs an Infection version that has the `--logger-json` option ([infection/infection#3735](https://github.com/infection/infection/pull/3735)).

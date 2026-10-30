@@ -8,9 +8,10 @@
  * file that was distributed with this source code.
  */
 
-namespace WickedOne\InfectionMateExtension\Runner;
+namespace WickedOne\InfectionMateExtension\Runner\Argument;
 
-use WickedOne\InfectionMateExtension\Config\ConfigurationDetector;
+use WickedOne\InfectionMateExtension\Discovery\ConfigurationDiscovery;
+use WickedOne\InfectionMateExtension\Runner\ProcessExecutor;
 
 /**
  * the options and arguments of the installed infection's run command, read from its own console definition so
@@ -31,7 +32,7 @@ class InfectionCapabilities
 
     public function __construct(
         private readonly string $projectRoot,
-        private readonly ConfigurationDetector $configuration,
+        private readonly ConfigurationDiscovery $configuration,
         private readonly ProcessExecutor $executor,
     ) {
     }

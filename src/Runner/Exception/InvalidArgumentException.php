@@ -8,12 +8,12 @@
  * file that was distributed with this source code.
  */
 
-namespace WickedOne\InfectionMateExtension\Exception;
+namespace WickedOne\InfectionMateExtension\Runner\Exception;
 
 /**
  * @author wicliff wolda <wicliff.wolda@gmail.com>
  */
-class InvalidArgument extends \InvalidArgumentException
+class InvalidArgumentException extends \InvalidArgumentException
 {
     public function __construct(string $message, public readonly string $hint)
     {

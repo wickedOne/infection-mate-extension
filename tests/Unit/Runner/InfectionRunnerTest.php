@@ -12,7 +12,7 @@ namespace WickedOne\InfectionMateExtension\Tests\Unit\Runner;
 
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
-use WickedOne\InfectionMateExtension\Config\ConfigurationDetector;
+use WickedOne\InfectionMateExtension\Discovery\ConfigurationDiscovery;
 use WickedOne\InfectionMateExtension\Runner\InfectionRunner;
 use WickedOne\InfectionMateExtension\Runner\RunResult;
 use WickedOne\InfectionMateExtension\Tests\Support\FakeProcessExecutor;
@@ -95,7 +95,7 @@ class InfectionRunnerTest extends TestCase
 
     public function testRunRemovesTheLogWhenTheExecutorThrows(): void
     {
-        $runner = new InfectionRunner($this->root, new ConfigurationDetector($this->root), new FakeProcessExecutor(static fn (): RunResult => throw new \RuntimeException('boom')));
+        $runner = new InfectionRunner($this->root, new ConfigurationDiscovery($this->root), new FakeProcessExecutor(static fn (): RunResult => throw new \RuntimeException('boom')));
 
         try {
             $runner->run([]);
@@ -159,7 +159,7 @@ class InfectionRunnerTest extends TestCase
 
     public function testRunUsesConstructorTimeoutWhenNoneIsGiven(): void
     {
-        $runner = new InfectionRunner($this->root, new ConfigurationDetector($this->root), $this->executor, 5);
+        $runner = new InfectionRunner($this->root, new ConfigurationDiscovery($this->root), $this->executor, 5);
 
         $runner->run([]);
 
@@ -266,7 +266,7 @@ class InfectionRunnerTest extends TestCase
 
     private function runner(): InfectionRunner
     {
-        return new InfectionRunner($this->root, new ConfigurationDetector($this->root), $this->executor);
+        return new InfectionRunner($this->root, new ConfigurationDiscovery($this->root), $this->executor);
     }
 
     private function write(string $relativePath, string $contents): void

@@ -17,7 +17,7 @@ env:
     DEFAULT_PHP: '8.5'
 
 jobs:
-    tests:
+    unit-tests:
         name: Tests (PHP ${{ matrix.php }}, ${{ matrix.dependencies }})
         runs-on: ubuntu-latest
         strategy:
@@ -39,7 +39,7 @@ jobs:
                   dependency-versions: ${{ matrix.dependencies }}
                   composer-options: --prefer-stable
 
-            - run: composer test
+            - run: vendor/bin/phpunit
 
     lint:
         name: Lint

@@ -15,7 +15,7 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Symfony\AI\Mate\Encoding\ResponseEncoder;
 use WickedOne\InfectionMateExtension\Capability\DescribeMutatorTool;
-use WickedOne\InfectionMateExtension\Config\ConfigurationDetector;
+use WickedOne\InfectionMateExtension\Discovery\ConfigurationDiscovery;
 use WickedOne\InfectionMateExtension\Runner\InfectionRunner;
 use WickedOne\InfectionMateExtension\Runner\RunResult;
 use WickedOne\InfectionMateExtension\Tests\Support\FakeProcessExecutor;
@@ -97,7 +97,7 @@ class DescribeMutatorToolTest extends TestCase
     {
         $root = vfsStream::setup('project')->url();
 
-        return new DescribeMutatorTool(new InfectionRunner($root, new ConfigurationDetector($root), $executor));
+        return new DescribeMutatorTool(new InfectionRunner($root, new ConfigurationDiscovery($root), $executor));
     }
 
     /**

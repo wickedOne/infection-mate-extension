@@ -1,107 +1,46 @@
 # CLAUDE.md
 
-This file provides guidance when working on the MatesOfMate extension template.
+Infection extension for Symfony Mate (`wickedone/infection-mate-extension`, namespace `WickedOne\InfectionMateExtension`). It runs Infection once and lets the agent inspect the result (summary, escaped mutants, one mutant, mutator descriptions) without re-running.
 
-## Project Overview
+## Structure
 
-This package is the starter template for MatesOfMate extensions. It should model current Symfony Mate conventions, not outdated bootstrap steps.
+- `src/Capability/`: `RunTool` (`infection-run`), `SummaryTool` (`infection-summary`), `EscapedTool` (`infection-escaped`), `MutantTool` (`infection-mutant`), `DescribeMutatorTool` (`infection-describe-mutator`), `ConfigResource` (`infection://config`)
+- `src/Runner/`: `InfectionRunner`, `ProcessExecutor`, `RunResult`; `Runner/Argument/`: `ArgumentResolver`, `InfectionCapabilities`; `Runner/Exception/InvalidArgumentException` carries the `hint` returned to the agent
+- `src/Parser/`: `JsonLogParser` turns the JSON log into `MutantResult`s, one per entry in `JsonLogParser::BUCKETS`
+- `src/Cache/RunCache`: parsed runs by `runId`, last 10, in `%mate.cache_dir%/infection-runs`
+- `src/Discovery/ConfigurationDiscovery`: finds `infection.json5`, `infection.json` or their `.dist` variants, and the binary (`vendor/bin/infection`, else a global `infection`)
+- `src/Formatter/ResultFormatter`: summary, paged listing and single-mutant payloads
+- `src/Filesystem/PathResolver`
+- `config/config.php` registers every service; `INSTRUCTIONS.md` maps user intents to tools; `skills/infection-mutation-testing/SKILL.md` is the Agent Skill (declared in `extra.ai-mate.skills`)
 
-## Current Mate Baseline
+## Design rules
 
-The template should stay aligned with:
+- `InfectionRunner` passes `--logger-json=<project root>/.infection.mate.<token>.log.json`, reads the file back and deletes it; leftovers older than a day are swept at the next run
+- `InfectionCapabilities` reads `infection run --help --format=json` once per request; `ArgumentResolver` validates the names and value shapes of `options` against it, so no Infection option is named in code except the ones the extension manages (`ArgumentResolver::MANAGED` and `logger-*`)
+- `paths` must be relative, exist and resolve inside the project root
+- mutants have no id in Infection's log: a `ref` is `bucket:index` and only valid within one `runId`
+- `ProcessExecutor` is the only place a process is started and `PathResolver` the only `realpath` caller; these two seams keep everything else free of real I/O
+- tools return `ResponseEncoder` strings; content from the inspected project (diffs, source, test output) goes through `encodeUntrusted`; failures are returned as `{error, hint[, output]}` payloads, never thrown
 
-- `symfony/ai-mate` `^0.13 || ^0.14 || ^1.0.0-BETA1` (as allowed in `composer.json`), developed against the released `0.13.x`
-- current Mate response encoding conventions as shipped in core
+## Testing
 
-Current workflow assumptions:
+- `vendor/bin/phpunit`; line coverage stays at 100% (`--coverage-text`, CI does not gate on it)
+- no disk or process I/O in tests: `mikey179/vfsstream` for files, `tests/Support/FakeProcessExecutor` and `FakePathResolver` for the seams; only `ProcessExecutorTest` and `PathResolverTest` touch the real filesystem or run `php -r`
+- `tests/Fixtures/infection-log.json` is the sample log for parser and formatter tests
+- `composer lint`: composer validate, rector, php-cs-fixer and phpstan (level 8 over `src` and `tests`), all dry-run; `composer fix` applies rector and php-cs-fixer
+- `composer test` runs `vendor/bin/infection`: `minMsi` and `minCoveredMsi` are 100 with phpstan as static analysis tool, so no escaped mutants
+- `vendor/bin/mate skills:validate` checks the skill; CI runs phpunit on PHP 8.3-8.5 with lowest and highest deps, plus lint, skills validation and infection on PHP 8.5
 
-- projects are initialized with `vendor/bin/mate init`
-- Composer install and update handle extension discovery in current Mate setups
-- `vendor/bin/mate discover` refreshes discovery state and regenerates `mate/AGENT_INSTRUCTIONS.md`
-- tools are invoked from the CLI with `mate tools:call <tool> --<param>=<value>`
-- debugging commands include `mate debug:capabilities`, `mate debug:extensions`, and `mate tools:*`
+## Conventions
 
-## Common Commands
+- no `declare(strict_types=1)`, no `final`; code comments are lowercase and not prose, only for what is not obvious
+- when a tool changes, update `INSTRUCTIONS.md`, the skill, `README.md` and `CHANGELOG.md` to the real names and behaviour
+- commit messages stay clean, without AI attribution
 
-```bash
-composer install
-composer test
-composer lint
-composer fix
-vendor/bin/mate debug:capabilities
-vendor/bin/mate debug:extensions
-```
+## Resources
 
-## Package Structure
+Generic Mate guidance (project workflow, tool/resource attributes, `ResponseEncoder`, service registration, skills) is not repeated here:
 
-- `src/Capability/` holds the tools (`RunTool`, `EscapedTool`, `MutantTool`, `SummaryTool`, `DescribeMutatorTool`) and `ConfigResource`
-- `src/Runner/`, `src/Exception/`, `src/Parser/`, `src/Cache/`, `src/Config/`, `src/Formatter/` hold the plumbing behind the capabilities
-- `InfectionRunner` requests the JSON log with `--logger-json=<file>` (a temporary file in the project root, deleted afterwards) and never writes or copies the project's Infection config; it needs an Infection that ships that option (infection/infection#3735)
-- `InfectionCapabilities` reads the installed Infection's `run --help --format=json` so `ArgumentResolver` validates the `options` of `infection-run` (name and value shape) against that version instead of a hardcoded list; no option is named in code except the ones the extension manages itself
-- `ProcessExecutor` (the only place a process is started) and `PathResolver` (the only `realpath` caller) are the seams that keep tests free of real I/O
-- `config/config.php` registers services
-- `INSTRUCTIONS.md` maps user intents to the tools
-- `skills/infection-mutation-testing/SKILL.md` is the extension's Agent Skill
-
-## Skills
-
-Skills live in `skills/<name>/SKILL.md` and are declared through `extra.ai-mate.skills`. Mate copies them into the consuming project as `mate-<name>`.
-
-- the front matter `name` must equal the directory name, and the `description` must say when the skill applies
-- prefix the name with the framework so it stays unique across installed extensions
-- a skill carries judgment, not a tool list: when to reach for the tools, in which order, how to read the payload, which failure paths mean what
-- follow the house shape of the Symfony Mate skills: tool list, then `## Workflow`, `## Reading`, `## Failure paths`, `## Rules`; inline commands, no fenced blocks
-- check the result with `vendor/bin/mate skills:list` and `vendor/bin/mate skills:validate`
-
-## Service Registration
-
-All capabilities should be registered in `config/config.php`.
-
-```php
-$services = $container->services()
-    ->defaults()
-    ->autowire()
-    ->autoconfigure();
-
-$services->set(YourTool::class);
-```
-
-## House Style vs Platform Capability
-
-MatesOfMate house style:
-
-- no `declare(strict_types=1)` in examples
-- no `final` classes in examples
-- file headers stay consistent with the org
-- comments are lowercase and not prose: assume the reader understands the code and only explain what is not obvious
-
-Current Mate platform capability:
-
-- tools may return strings, arrays, or scalars
-- encoded string payloads should use Mate's built-in `ResponseEncoder`
-- encoder-backed resources should use `text/plain` MIME types
-
-## Testing Expectations
-
-The template must be clean out of the box.
-
-- `composer test` must pass, and line coverage stays at 100% (check with `vendor/bin/phpunit --coverage-text`; CI does not gate on it)
-- tests do no disk or process I/O: use `mikey179/vfsstream` for files, `tests/Support/FakeProcessExecutor` and `FakePathResolver` for the seams (real reads of existing repo files and `php -r` processes are only allowed in the `ProcessExecutor` and `PathResolver` tests)
-- `composer lint` must pass
-- `vendor/bin/infection` must report no escaped mutants (`minMsi` and `minCoveredMsi` are 100)
-- CI (`.github/workflows/ci.yml`) runs tests on PHP 8.3-8.5 with lowest and highest dependencies, plus lint and mutation tests on PHP 8.5
-- docs must match the actual file layout and commands
-
-## Authoring Guidance
-
-When updating this template:
-
-1. keep `README.md`, `CLAUDE.md`, `AGENTS.md`, and `INSTRUCTIONS.md` mutually consistent
-2. keep examples aligned with real package conventions in this monorepo
-3. prefer concrete capability examples over placeholder prose
-4. prefer flexible tool shapes over near-duplicate tool variants
-5. avoid documenting steps that are obsolete in current Mate workflows
-
-## Commit Message Convention
-
-Keep commit messages clean and free of AI attribution.
+- [Symfony Mate docs](https://symfony.com/doc/current/ai/components/mate.html)
+- `vendor/symfony/ai-mate/README.md` and `vendor/symfony/ai-mate/INSTRUCTIONS.md`
+- `vendor/bin/mate debug:capabilities`, `debug:extensions`, `skills:list`

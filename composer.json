@@ -1,83 +1,96 @@
 {
-    "name": "wickedone/infection-mate-extension",
-    "description": "infection extension for symfony mate",
-    "type": "symfony-ai-mate",
-    "license": "MIT",
-    "keywords": ["symfony", "ai", "mate", "mcp", "ai-assistant", "infection", "mutation-testing"],
-    "authors": [
-        {
-            "name": "wicliff wolda",
-            "homepage": "https://github.com/wickedOne"
-        }
+  "name": "wickedone/infection-mate-extension",
+  "description": "infection extension for symfony mate",
+  "type": "symfony-ai-mate",
+  "license": "MIT",
+  "keywords": [
+    "symfony",
+    "ai",
+    "mate",
+    "mcp",
+    "ai-assistant",
+    "infection",
+    "mutation-testing"
+  ],
+  "authors": [
+    {
+      "name": "wicliff wolda",
+      "homepage": "https://github.com/wickedOne"
+    }
+  ],
+  "require": {
+    "php": "~8.3 || ~8.4 || ~8.5",
+    "ext-mbstring": "*",
+    "colinodell/json5": "^3.0",
+    "symfony/ai-mate": "^0.13 || ^0.14 || ^1.0.0-BETA1 || dev-main",
+    "symfony/process": "^5.4 || ^6.4 || ^7.3 || ^8.1.10"
+  },
+  "require-dev": {
+    "friendsofphp/php-cs-fixer": "^3.95.27",
+    "infection/infection": "dev-add-json-logger-cli as 0.35.8",
+    "mikey179/vfsstream": "^1.6.12",
+    "phpstan/phpstan": "^2.3.4",
+    "phpstan/phpstan-phpunit": "^2.1.1",
+    "phpunit/phpunit": "^10.0 || ^11.0 || ^12.0 || ^13.4.5",
+    "rector/rector": "^2.8.3"
+  },
+  "suggest": {
+    "helgesverre/toon": "Makes tool responses use the token-efficient TOON format instead of JSON (use ^3.2.1)",
+    "infection/infection": "Required in the project under test: the tools run its vendor/bin/infection binary (or a global infection)"
+  },
+  "autoload": {
+    "psr-4": {
+      "WickedOne\\InfectionMateExtension\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "WickedOne\\InfectionMateExtension\\Tests\\": "tests/"
+    }
+  },
+  "extra": {
+    "ai-mate": {
+      "scan-dirs": [
+        "src/Capability"
+      ],
+      "includes": [
+        "config/config.php"
+      ],
+      "instructions": "INSTRUCTIONS.md",
+      "skills": [
+        "skills"
+      ]
+    },
+    "branch-alias": {
+      "dev-main": "0.7.x-dev"
+    }
+  },
+  "scripts": {
+    "test": "vendor/bin/infection",
+    "lint": [
+      "@composer validate --strict",
+      "vendor/bin/rector process --dry-run",
+      "vendor/bin/php-cs-fixer fix --dry-run --diff",
+      "vendor/bin/phpstan analyse"
     ],
-    "require": {
-        "php": "~8.3 || ~8.4 || ~8.5",
-        "ext-mbstring": "*",
-        "colinodell/json5": "^3.0",
-        "symfony/ai-mate": "^0.13 || ^0.14 || ^1.0.0-BETA1 || dev-main",
-        "symfony/process": "^5.4 || ^6.4 || ^7.3 || ^8.0"
-    },
-    "require-dev": {
-        "friendsofphp/php-cs-fixer": "^3.0",
-        "infection/infection": "dev-add-json-logger-cli as 0.35.8",
-        "mikey179/vfsstream": "^1.6.12",
-        "phpstan/phpstan": "^2.0",
-        "phpstan/phpstan-phpunit": "^2.0",
-        "phpunit/phpunit": "^10.0 || ^11.0 || ^12.0 || ^13.0",
-        "rector/rector": "^2.0"
-    },
-    "suggest": {
-        "infection/infection": "Required in the project under test: the tools run its vendor/bin/infection binary (or a global infection)"
-    },
-    "autoload": {
-        "psr-4": {
-            "WickedOne\\InfectionMateExtension\\": "src/"
-        }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "WickedOne\\InfectionMateExtension\\Tests\\": "tests/"
-        }
-    },
-    "extra": {
-        "ai-mate": {
-            "scan-dirs": [
-                "src/Capability"
-            ],
-            "includes": ["config/config.php"],
-            "instructions": "INSTRUCTIONS.md",
-            "skills": [
-                "skills"
-            ]
-        },
-        "branch-alias": {
-            "dev-main": "0.7.x-dev"
-        }
-    },
-    "scripts": {
-        "test": "vendor/bin/phpunit",
-        "lint": [
-            "@composer validate --strict",
-            "vendor/bin/rector process --dry-run",
-            "vendor/bin/php-cs-fixer fix --dry-run --diff",
-            "vendor/bin/phpstan analyse"
-        ],
-        "fix": [
-            "vendor/bin/rector process",
-            "vendor/bin/php-cs-fixer fix"
-        ]
-    },
-    "config": {
-        "sort-packages": true,
-        "allow-plugins": {
-            "infection/extension-installer": true,
-            "php-http/discovery": true,
-            "symfony/ai-mate-composer-plugin": true
-        }
-    },
-    "repositories": [{
-        "name": "infection",
-        "type": "vcs",
-        "url": "https://github.com/wickedOne/infection"
-    }]
+    "fix": [
+      "vendor/bin/rector process",
+      "vendor/bin/php-cs-fixer fix"
+    ]
+  },
+  "config": {
+    "sort-packages": true,
+    "allow-plugins": {
+      "infection/extension-installer": true,
+      "php-http/discovery": true,
+      "symfony/ai-mate-composer-plugin": true
+    }
+  },
+  "repositories": [
+    {
+      "name": "infection",
+      "type": "vcs",
+      "url": "https://github.com/wickedOne/infection"
+    }
+  ]
 }
