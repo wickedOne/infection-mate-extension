@@ -4,6 +4,14 @@ A [Symfony Mate](https://symfony.com/doc/current/ai/components/mate.html) extens
 
 It is built on data Infection already produces (its JSON log and `infection describe`). The ideas come from the "AI-assisted mutation testing" section of [infection/infection#3498](https://github.com/infection/infection/issues/3498), where the agent supplies the reasoning and this extension supplies the evidence.
 
+[![Mutation testing badge](https://img.shields.io/endpoint?style=flat&url=https%3A%2F%2Fbadge-api.stryker-mutator.io%2Fgithub.com%2FwickedOne%2Finfection-mat-extension%2Fmain)](https://dashboard.stryker-mutator.io/reports/github.com/wickedOne/infection-mate-extension/main)
+[![codecov](https://codecov.io/gh/wickedOne/infection-mate-extension/branch/main/graph/badge.svg?token=UHKAVGURP7)](https://codecov.io/gh/wickedOne/infection-mate-extension)
+
+[//]: # ([![Latest Stable Version]&#40;https://poser.pugx.org/wickedone/phrase-tag-bundle/v&#41;]&#40;https://packagist.org/packages/wickedone/phrase-tag-bundle&#41;)
+[//]: # ([![Total Downloads]&#40;https://poser.pugx.org/wickedone/phrase-tag-bundle/downloads&#41;]&#40;https://packagist.org/packages/wickedone/phrase-tag-bundle&#41;)
+[//]: # ([![License]&#40;https://poser.pugx.org/wickedone/infection-mate-extension/license&#41;]&#40;https://packagist.org/packages/wickedone/infection-mate-extension&#41;)
+[//]: # ([![PHP Version Require]&#40;https://poser.pugx.org/wickedone/infection-mate-extension/require/php&#41;]&#40;https://packagist.org/packages/wickedone/infection-mate-extension&#41;)
+
 ## Installation
 
 ```bash
@@ -34,6 +42,10 @@ vendor/bin/mate resources:read infection://config
 ```
 
 The extension also ships the `mate-infection-mutation-testing` skill with the workflow, how to read each bucket, and the rules for equivalent mutants and ignore annotations.
+
+## Output format
+
+Responses are JSON. When [`helgesverre/toon`](https://github.com/HelgeSverre/toon-php) is installed in the project (`composer require --dev helgesverre/toon`), Mate encodes them as the more token-efficient TOON format instead. There is no setting: uninstall the package to get JSON back.
 
 ## How it works
 

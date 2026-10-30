@@ -8,13 +8,13 @@
  * file that was distributed with this source code.
  */
 
-namespace WickedOne\InfectionMateExtension\Tests\Unit\Config;
+namespace WickedOne\InfectionMateExtension\Tests\Unit\Discovery;
 
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
-use WickedOne\InfectionMateExtension\Config\ConfigurationDetector;
+use WickedOne\InfectionMateExtension\Discovery\ConfigurationDiscovery;
 
-class ConfigurationDetectorTest extends TestCase
+class ConfigurationDiscoveryTest extends TestCase
 {
     private string $root;
 
@@ -135,7 +135,7 @@ class ConfigurationDetectorTest extends TestCase
     {
         $this->makeUnreadableConfig();
 
-        $this->assertSame([], (new ConfigurationDetector($this->root))->read());
+        $this->assertSame([], (new ConfigurationDiscovery($this->root))->read());
     }
 
     private function write(string $relativePath, string $contents): void
@@ -159,8 +159,8 @@ class ConfigurationDetectorTest extends TestCase
         $this->root = 'vfs://project';
     }
 
-    private function detector(): ConfigurationDetector
+    private function detector(): ConfigurationDiscovery
     {
-        return new ConfigurationDetector($this->root);
+        return new ConfigurationDiscovery($this->root);
     }
 }

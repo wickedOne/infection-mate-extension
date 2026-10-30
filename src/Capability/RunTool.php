@@ -13,10 +13,10 @@ namespace WickedOne\InfectionMateExtension\Capability;
 use Symfony\AI\Mate\Attribute\MateTool;
 use Symfony\AI\Mate\Encoding\ResponseEncoder;
 use WickedOne\InfectionMateExtension\Cache\RunCache;
-use WickedOne\InfectionMateExtension\Exception\InvalidArgument;
 use WickedOne\InfectionMateExtension\Formatter\ResultFormatter;
 use WickedOne\InfectionMateExtension\Parser\JsonLogParser;
-use WickedOne\InfectionMateExtension\Runner\ArgumentResolver;
+use WickedOne\InfectionMateExtension\Runner\Argument\ArgumentResolver;
+use WickedOne\InfectionMateExtension\Runner\Exception\InvalidArgumentException;
 use WickedOne\InfectionMateExtension\Runner\InfectionRunner;
 
 /**
@@ -48,7 +48,7 @@ class RunTool
     {
         try {
             $arguments = $this->arguments->resolve($paths, $options, $timeout);
-        } catch (InvalidArgument $e) {
+        } catch (InvalidArgumentException $e) {
             return $this->error($e->getMessage(), $e->hint);
         }
 

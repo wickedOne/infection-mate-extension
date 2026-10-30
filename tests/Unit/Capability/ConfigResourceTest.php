@@ -14,7 +14,7 @@ use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
 use Symfony\AI\Mate\Encoding\ResponseEncoder;
 use WickedOne\InfectionMateExtension\Capability\ConfigResource;
-use WickedOne\InfectionMateExtension\Config\ConfigurationDetector;
+use WickedOne\InfectionMateExtension\Discovery\ConfigurationDiscovery;
 
 class ConfigResourceTest extends TestCase
 {
@@ -71,7 +71,7 @@ class ConfigResourceTest extends TestCase
 
     private function resource(): ConfigResource
     {
-        return new ConfigResource(new ConfigurationDetector($this->root));
+        return new ConfigResource(new ConfigurationDiscovery($this->root));
     }
 
     /**

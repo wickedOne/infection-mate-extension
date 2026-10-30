@@ -16,11 +16,11 @@ use PHPUnit\Framework\TestCase;
 use Symfony\AI\Mate\Encoding\ResponseEncoder;
 use WickedOne\InfectionMateExtension\Cache\RunCache;
 use WickedOne\InfectionMateExtension\Capability\RunTool;
-use WickedOne\InfectionMateExtension\Config\ConfigurationDetector;
+use WickedOne\InfectionMateExtension\Discovery\ConfigurationDiscovery;
 use WickedOne\InfectionMateExtension\Formatter\ResultFormatter;
 use WickedOne\InfectionMateExtension\Parser\JsonLogParser;
-use WickedOne\InfectionMateExtension\Runner\ArgumentResolver;
-use WickedOne\InfectionMateExtension\Runner\InfectionCapabilities;
+use WickedOne\InfectionMateExtension\Runner\Argument\ArgumentResolver;
+use WickedOne\InfectionMateExtension\Runner\Argument\InfectionCapabilities;
 use WickedOne\InfectionMateExtension\Runner\InfectionRunner;
 use WickedOne\InfectionMateExtension\Runner\RunResult;
 use WickedOne\InfectionMateExtension\Tests\Support\FakePathResolver;
@@ -528,11 +528,11 @@ class RunToolTest extends TestCase
         $paths = new FakePathResolver($links);
 
         $this->tool = new RunTool(
-            new InfectionRunner($this->root, new ConfigurationDetector($this->root), $this->executor),
+            new InfectionRunner($this->root, new ConfigurationDiscovery($this->root), $this->executor),
             new JsonLogParser(new FakePathResolver()),
             $this->cache = new RunCache($this->root.'/cache'),
             new ResultFormatter($this->root, $paths),
-            new ArgumentResolver($this->root, $paths, new InfectionCapabilities($this->root, new ConfigurationDetector($this->root), $this->executor)),
+            new ArgumentResolver($this->root, $paths, new InfectionCapabilities($this->root, new ConfigurationDiscovery($this->root), $this->executor)),
             $this->root,
         );
     }

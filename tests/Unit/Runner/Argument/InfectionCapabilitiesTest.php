@@ -8,13 +8,13 @@
  * file that was distributed with this source code.
  */
 
-namespace WickedOne\InfectionMateExtension\Tests\Unit\Runner;
+namespace Unit\Runner\Argument;
 
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use WickedOne\InfectionMateExtension\Config\ConfigurationDetector;
-use WickedOne\InfectionMateExtension\Runner\InfectionCapabilities;
+use WickedOne\InfectionMateExtension\Discovery\ConfigurationDiscovery;
+use WickedOne\InfectionMateExtension\Runner\Argument\InfectionCapabilities;
 use WickedOne\InfectionMateExtension\Runner\RunResult;
 use WickedOne\InfectionMateExtension\Tests\Support\FakeProcessExecutor;
 
@@ -51,7 +51,7 @@ class InfectionCapabilitiesTest extends TestCase
     {
         $executor = $this->executor(new RunResult(0, '{"definition":{"options":{},"arguments":{}}}', null));
 
-        (new InfectionCapabilities($this->root, new ConfigurationDetector($this->root), $executor))->definition();
+        (new InfectionCapabilities($this->root, new ConfigurationDiscovery($this->root), $executor))->definition();
 
         $call = $executor->lastCall();
         $this->assertSame(['infection', 'run', '--help', '--format=json', '--no-ansi', '--no-interaction'], $call['command']);
@@ -65,7 +65,7 @@ class InfectionCapabilitiesTest extends TestCase
         $root = vfsStream::url('local');
         $executor = $this->executor(new RunResult(0, '{"definition":{"options":{},"arguments":{}}}', null));
 
-        (new InfectionCapabilities($root, new ConfigurationDetector($root), $executor))->definition();
+        (new InfectionCapabilities($root, new ConfigurationDiscovery($root), $executor))->definition();
 
         $this->assertSame([\PHP_BINARY, $root.'/vendor/bin/infection', 'run'], \array_slice($executor->lastCall()['command'], 0, 3));
     }
@@ -80,7 +80,7 @@ class InfectionCapabilitiesTest extends TestCase
     public function testReadsTheDefinitionOnlyOnce(): void
     {
         $executor = $this->executor(new RunResult(0, '{"definition":{"options":{},"arguments":{}}}', null));
-        $capabilities = new InfectionCapabilities($this->root, new ConfigurationDetector($this->root), $executor);
+        $capabilities = new InfectionCapabilities($this->root, new ConfigurationDiscovery($this->root), $executor);
 
         $capabilities->definition();
         $capabilities->definition();
@@ -111,7 +111,7 @@ class InfectionCapabilitiesTest extends TestCase
 
     private function capabilities(RunResult|\Throwable $outcome): InfectionCapabilities
     {
-        return new InfectionCapabilities($this->root, new ConfigurationDetector($this->root), $this->executor($outcome));
+        return new InfectionCapabilities($this->root, new ConfigurationDiscovery($this->root), $this->executor($outcome));
     }
 
     private function executor(RunResult|\Throwable $outcome): FakeProcessExecutor

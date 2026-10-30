@@ -15,9 +15,10 @@ permissions:
 
 env:
     DEFAULT_PHP: '8.5'
+    COMPOSER_AUTH: '{"github-oauth": {"github.com": "${{ secrets.GITHUB_TOKEN }}"}}'
 
 jobs:
-    tests:
+    unit-tests:
         name: Tests (PHP ${{ matrix.php }}, ${{ matrix.dependencies }})
         runs-on: ubuntu-latest
         strategy:
@@ -39,7 +40,10 @@ jobs:
                   dependency-versions: ${{ matrix.dependencies }}
                   composer-options: --prefer-stable
 
-            - run: composer test
+            - run: vendor/bin/phpunit
+
+            - name: "upload to codecov"
+              uses: codecov/codecov-action@v7
 
     lint:
         name: Lint
@@ -74,3 +78,6 @@ jobs:
             - uses: ramsey/composer-install@4.0.0
 
             - run: vendor/bin/infection --threads=max --no-progress --no-interaction --no-ansi --logger-github
+              env:
+                INFECTION_BADGE_API_KEY: ${{ secrets.STRYKER_DASHBOARD_API_KEY }}
+                STRYKER_DASHBOARD_API_KEY: ${{ secrets.STRYKER_DASHBOARD_API_KEY }}

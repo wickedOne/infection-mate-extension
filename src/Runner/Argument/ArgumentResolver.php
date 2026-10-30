@@ -8,10 +8,10 @@
  * file that was distributed with this source code.
  */
 
-namespace WickedOne\InfectionMateExtension\Runner;
+namespace WickedOne\InfectionMateExtension\Runner\Argument;
 
-use WickedOne\InfectionMateExtension\Exception\InvalidArgument;
 use WickedOne\InfectionMateExtension\Filesystem\PathResolver;
+use WickedOne\InfectionMateExtension\Runner\Exception\InvalidArgumentException;
 
 /**
  * @author wicliff wolda <wicliff.wolda@gmail.com>
@@ -33,12 +33,12 @@ class ArgumentResolver
      *
      * @return list<string>
      *
-     * @throws InvalidArgument
+     * @throws InvalidArgumentException
      */
     public function resolve(?array $paths, ?array $options, ?int $timeout): array
     {
         if (null !== $timeout && $timeout < 1) {
-            throw new InvalidArgument('Invalid timeout.', 'Pass a number of seconds of at least 1, or omit it for the default.');
+            throw new InvalidArgumentException('Invalid timeout.', 'Pass a number of seconds of at least 1, or omit it for the default.');
         }
 
         $files = [];
@@ -50,7 +50,7 @@ class ArgumentResolver
         $definition = $this->capabilities->definition();
 
         if ([] !== $files && null !== $definition && !\in_array('paths', $definition['arguments'], true)) {
-            throw new InvalidArgument('The installed Infection does not accept paths.', 'Update infection/infection, or leave paths out.');
+            throw new InvalidArgumentException('The installed Infection does not accept paths.', 'Update infection/infection, or leave paths out.');
         }
 
         return [...$this->options($options ?? [], $definition), ...$files];
@@ -69,7 +69,7 @@ class ArgumentResolver
         }
 
         if (null === $definition) {
-            throw new InvalidArgument('Could not read the options of the installed Infection.', 'Check that "infection run --help" works in the project, or leave options out.');
+            throw new InvalidArgumentException('Could not read the options of the installed Infection.', 'Check that "infection run --help" works in the project, or leave options out.');
         }
 
         $known = array_filter($definition['options'], fn (string $name): bool => !$this->managed($name), \ARRAY_FILTER_USE_KEY);
@@ -77,7 +77,7 @@ class ArgumentResolver
 
         foreach ($options as $name => $value) {
             if (!isset($known[$name])) {
-                throw new InvalidArgument(\sprintf('The installed Infection does not support the option "%s".', $name), 'Use one of: '.implode(', ', array_keys($known)).'.');
+                throw new InvalidArgumentException(\sprintf('The installed Infection does not support the option "%s".', $name), 'Use one of: '.implode(', ', array_keys($known)).'.');
             }
 
             array_push($arguments, ...$this->option($name, $value, $known[$name]));
@@ -99,20 +99,20 @@ class ArgumentResolver
 
         if (true === $value) {
             if ($shape['is_value_required']) {
-                throw new InvalidArgument(\sprintf('The option "%s" needs a value.', $name), 'Pass a string or number for it.');
+                throw new InvalidArgumentException(\sprintf('The option "%s" needs a value.', $name), 'Pass a string or number for it.');
             }
 
             return ['--'.$name];
         }
 
         if (!$shape['accept_value']) {
-            throw new InvalidArgument(\sprintf('The option "%s" takes no value.', $name), 'Pass true to switch it on, or leave it out.');
+            throw new InvalidArgumentException(\sprintf('The option "%s" takes no value.', $name), 'Pass true to switch it on, or leave it out.');
         }
 
         $values = \is_array($value) ? $value : [$value];
 
         if (\is_array($value) && !$shape['is_multiple']) {
-            throw new InvalidArgument(\sprintf('The option "%s" takes a single value.', $name), 'Pass one string or number.');
+            throw new InvalidArgumentException(\sprintf('The option "%s" takes a single value.', $name), 'Pass one string or number.');
         }
 
         return array_map(fn (mixed $single): string => '--'.$name.'='.$this->value($name, $single), array_values($values));
@@ -123,7 +123,7 @@ class ArgumentResolver
         $value = \is_int($value) || \is_float($value) ? (string) $value : $value;
 
         if (!\is_string($value) || '' === $value || str_starts_with($value, '-') || preg_match('/[\x00-\x1f]/', $value)) {
-            throw new InvalidArgument(\sprintf('Invalid value for the option "%s".', $name), 'Pass a non-empty string or number that does not start with a dash.');
+            throw new InvalidArgumentException(\sprintf('Invalid value for the option "%s".', $name), 'Pass a non-empty string or number that does not start with a dash.');
         }
 
         return $value;
@@ -140,18 +140,18 @@ class ArgumentResolver
     private function path(string $path): string
     {
         if ('' === $path || str_starts_with($path, '-') || \in_array('..', explode('/', $path), true) || str_starts_with($path, '/')) {
-            throw new InvalidArgument(\sprintf('Invalid path "%s".', $path), 'Paths must be relative to the project root and stay inside it.');
+            throw new InvalidArgumentException(\sprintf('Invalid path "%s".', $path), 'Paths must be relative to the project root and stay inside it.');
         }
 
         $real = $this->paths->resolve($this->projectRoot.'/'.$path);
         $root = $this->paths->resolve($this->projectRoot);
 
         if (null !== $real && null !== $root && $real !== $root && !str_starts_with($real, $root.'/')) {
-            throw new InvalidArgument(\sprintf('Path "%s" resolves outside the project.', $path), 'Paths must stay inside the project root.');
+            throw new InvalidArgumentException(\sprintf('Path "%s" resolves outside the project.', $path), 'Paths must stay inside the project root.');
         }
 
         if (null === $real) {
-            throw new InvalidArgument(\sprintf('Path "%s" does not exist.', $path), 'Check the path relative to the project root.');
+            throw new InvalidArgumentException(\sprintf('Path "%s" does not exist.', $path), 'Check the path relative to the project root.');
         }
 
         return $path;
