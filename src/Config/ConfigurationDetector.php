@@ -17,7 +17,7 @@ use ColinODell\Json5\Json5Decoder;
  */
 class ConfigurationDetector
 {
-    private const CANDIDATES = ['infection.json5', 'infection.json', 'infection.json5.dist', 'infection.json.dist'];
+    private const array CANDIDATES = ['infection.json5', 'infection.json', 'infection.json5.dist', 'infection.json.dist'];
 
     public function __construct(
         private readonly string $projectRoot,

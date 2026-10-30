@@ -28,6 +28,11 @@ class ResultFormatterTest extends TestCase
         $this->outside = $base.'/outside';
     }
 
+    protected function tearDown(): void
+    {
+        unset($this->root, $this->outside);
+    }
+
     public function testSummaryCountsEscapedMutantsByFileAndMutator(): void
     {
         $summary = $this->formatter()->summary('r1', ['msi' => 50], $this->mutants(), 1);

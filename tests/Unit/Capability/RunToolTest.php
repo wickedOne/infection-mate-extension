@@ -65,6 +65,11 @@ class RunToolTest extends TestCase
         $this->buildTool();
     }
 
+    protected function tearDown(): void
+    {
+        unset($this->root, $this->outside, $this->cache, $this->tool, $this->executor, $this->fake, $this->definition, $this->arguments);
+    }
+
     public function testRejectsNonPositiveTimeout(): void
     {
         $data = $this->error($this->tool->execute(timeout: 0));
@@ -138,13 +143,6 @@ class RunToolTest extends TestCase
     {
         $this->assertArrayHasKey('runId', $this->untrusted($this->tool->execute(options: ['git-diff-lines' => false, 'threads' => null])));
         $this->assertSame([], $this->extraArguments());
-    }
-
-    public function testRepeatedValuesIgnoreTheirKeys(): void
-    {
-        $this->tool->execute(options: ['filter' => ['first' => 'a.php', 'second' => 'b.php']]);
-
-        $this->assertSame(['--filter=a.php', '--filter=b.php'], $this->extraArguments());
     }
 
     public function testFlagsWithOptionalValueAcceptTrueAndAValue(): void

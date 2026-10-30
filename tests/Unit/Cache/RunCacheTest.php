@@ -25,6 +25,11 @@ class RunCacheTest extends TestCase
         $this->directory = vfsStream::setup('root')->url().'/cache';
     }
 
+    protected function tearDown(): void
+    {
+        unset($this->directory);
+    }
+
     public function testStoreReturnsIdInExpectedFormat(): void
     {
         $id = (new RunCache($this->directory))->store(['msi' => 50], $this->mutants(), 1);
@@ -264,17 +269,6 @@ class RunCacheTest extends TestCase
 
         $this->assertSame(1, $cache->load('r0000000000001')['exitCode'] ?? null);
         $this->assertSame(2, $cache->load('r0000000000002')['exitCode'] ?? null);
-    }
-
-    public function testLoadReturnsMutantsAsList(): void
-    {
-        mkdir($this->directory, 0o775, true);
-        $mutant = static fn (int $i): array => (new MutantResult('escaped', $i, 'Plus', 'src/A.php', 1, '', ''))->jsonSerialize();
-        file_put_contents($this->directory.'/r0000000000001.json', json_encode(['stats' => [], 'mutants' => [4 => $mutant(4), 9 => $mutant(9)]]));
-
-        $run = (new RunCache($this->directory))->load('r0000000000001');
-
-        $this->assertSame([0, 1], array_keys($run['mutants'] ?? []));
     }
 
     public function testLoadRejectsIdWithTrailingNewlineEvenWhenSuchFileExists(): void

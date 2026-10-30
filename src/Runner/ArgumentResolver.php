@@ -18,7 +18,7 @@ use WickedOne\InfectionMateExtension\Filesystem\PathResolver;
  */
 class ArgumentResolver
 {
-    private const MANAGED = ['configuration', 'no-progress', 'force-progress', 'help', 'version', 'quiet', 'silent', 'verbose', 'ansi', 'no-ansi', 'no-interaction'];
+    private const array MANAGED = ['configuration', 'no-progress', 'force-progress', 'help', 'version', 'quiet', 'silent', 'verbose', 'ansi', 'no-ansi', 'no-interaction'];
 
     public function __construct(
         private readonly string $projectRoot,

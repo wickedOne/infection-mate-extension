@@ -20,9 +20,7 @@ class PathResolver
      */
     public function resolve(string $path): ?string
     {
-        $real = realpath($path);
-
-        return false === $real ? null : $real;
+        return false === ($real = realpath($path)) ? null : $real;
     }
 
     public function isAbsolute(string $path): bool

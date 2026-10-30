@@ -22,7 +22,7 @@ use WickedOne\InfectionMateExtension\Config\ConfigurationDetector;
  */
 class InfectionCapabilities
 {
-    private const TIMEOUT = 60;
+    private const int TIMEOUT = 60;
 
     /** @var array{options: array<string, OptionShape>, arguments: list<string>}|null */
     private ?array $definition = null;

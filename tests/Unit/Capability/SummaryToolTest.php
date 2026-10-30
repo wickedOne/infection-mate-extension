@@ -34,6 +34,11 @@ class SummaryToolTest extends TestCase
         $this->tool = new SummaryTool($this->cache, new ResultFormatter($this->root, new FakePathResolver()));
     }
 
+    protected function tearDown(): void
+    {
+        unset($this->root, $this->cacheDirectory, $this->cache, $this->tool);
+    }
+
     public function testSummarisesRunAsUntrustedData(): void
     {
         $runId = $this->seedRun();

@@ -18,9 +18,9 @@ use WickedOne\InfectionMateExtension\Parser\MutantResult;
  */
 class ResultFormatter
 {
-    private const DIFF_LIMIT = 1200;
-    private const OUTPUT_LIMIT = 2000;
-    private const CONTEXT_LINES = 6;
+    private const int DIFF_LIMIT = 1200;
+    private const int OUTPUT_LIMIT = 2000;
+    private const int CONTEXT_LINES = 6;
 
     public function __construct(
         private readonly string $projectRoot,

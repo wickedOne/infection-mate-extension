@@ -26,6 +26,11 @@ class JsonLogParserTest extends TestCase
         $this->fixture = (string) file_get_contents(__DIR__.'/../../Fixtures/infection-log.json');
     }
 
+    protected function tearDown(): void
+    {
+        unset($this->parser, $this->fixture);
+    }
+
     public function testReturnsStatsFromLog(): void
     {
         $parsed = $this->parser->parse($this->fixture);

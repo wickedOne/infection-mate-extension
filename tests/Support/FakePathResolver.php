@@ -20,8 +20,9 @@ class FakePathResolver extends PathResolver
     /**
      * @param array<string, string> $links path => resolved target
      */
-    public function __construct(private readonly array $links = [])
-    {
+    public function __construct(
+        private readonly array $links = [],
+    ) {
     }
 
     public function resolve(string $path): ?string

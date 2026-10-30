@@ -23,6 +23,11 @@ class ConfigurationDetectorTest extends TestCase
         $this->root = vfsStream::setup('project')->url();
     }
 
+    protected function tearDown(): void
+    {
+        unset($this->root);
+    }
+
     public function testDetectReturnsNullWhenNoConfigExists(): void
     {
         $this->assertNull($this->detector()->detect());

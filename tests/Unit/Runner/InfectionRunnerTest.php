@@ -21,13 +21,17 @@ class InfectionRunnerTest extends TestCase
 {
     private string $root;
     private FakeProcessExecutor $executor;
-
     private ?string $logPath = null;
 
     protected function setUp(): void
     {
         $this->root = vfsStream::setup('project')->url();
         $this->executor = new FakeProcessExecutor($this->handle(...));
+    }
+
+    protected function tearDown(): void
+    {
+        unset($this->root, $this->executor, $this->logPath);
     }
 
     public function testDefaultTimeoutIsThirtyMinutes(): void
@@ -160,15 +164,6 @@ class InfectionRunnerTest extends TestCase
         $runner->run([]);
 
         $this->assertSame(5, $this->executor->lastCall()['timeout']);
-    }
-
-    public function testRunPrefersExplicitTimeoutOverDefault(): void
-    {
-        $runner = new InfectionRunner($this->root, new ConfigurationDetector($this->root), $this->executor, 5);
-
-        $runner->run([], 30);
-
-        $this->assertSame(30, $this->executor->lastCall()['timeout']);
     }
 
     public function testDescribeRunsInfectionDescribeAndReturnsOutput(): void

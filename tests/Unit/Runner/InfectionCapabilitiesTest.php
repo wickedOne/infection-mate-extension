@@ -27,6 +27,11 @@ class InfectionCapabilitiesTest extends TestCase
         $this->root = vfsStream::setup('project')->url();
     }
 
+    protected function tearDown(): void
+    {
+        unset($this->root);
+    }
+
     public function testExposesOptionShapesAndArguments(): void
     {
         $capabilities = $this->capabilities(new RunResult(0, '{"definition":{"options":{"threads":{"accept_value":true,"is_value_required":true,"is_multiple":false},"filter":{"accept_value":1,"is_value_required":0,"is_multiple":"yes"},"debug":{},"odd":5},"arguments":{"paths":{}}}}', null));

@@ -15,7 +15,7 @@ namespace WickedOne\InfectionMateExtension\Parser;
  */
 class MutantResult implements \JsonSerializable
 {
-    public const KEYS = ['bucket', 'index', 'mutator', 'file', 'line', 'diff', 'processOutput'];
+    public const array KEYS = ['bucket', 'index', 'mutator', 'file', 'line', 'diff', 'processOutput'];
 
     public function __construct(
         public readonly string $bucket,

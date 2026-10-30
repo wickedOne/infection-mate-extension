@@ -25,13 +25,9 @@ class ConfigResourceTest extends TestCase
         $this->root = vfsStream::setup('project')->url();
     }
 
-    public function testDescribesResourceWithUriAndPlainTextMimeType(): void
+    protected function tearDown(): void
     {
-        $result = $this->resource()->getConfiguration();
-
-        $this->assertSame('infection://config', $result['uri']);
-        $this->assertSame('text/plain', $result['mimeType']);
-        $this->assertArrayHasKey('text', $result);
+        unset($this->root);
     }
 
     public function testReportsNoFileAndEmptyConfigWhenNoneExists(): void

@@ -17,9 +17,9 @@ use WickedOne\InfectionMateExtension\Config\ConfigurationDetector;
  */
 class InfectionRunner
 {
-    private const DESCRIBE_TIMEOUT = 60;
-    private const TEMP_PREFIX = '.infection.mate.';
-    private const STALE_AFTER = 86400;
+    private const int DESCRIBE_TIMEOUT = 60;
+    private const string TEMP_PREFIX = '.infection.mate.';
+    private const int STALE_AFTER = 86400;
 
     public function __construct(
         private readonly string $projectRoot,

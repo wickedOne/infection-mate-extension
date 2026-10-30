@@ -27,8 +27,9 @@ class FakeProcessExecutor extends ProcessExecutor
     /**
      * @param \Closure(list<string>, string, int): RunResult $handler
      */
-    public function __construct(private readonly \Closure $handler)
-    {
+    public function __construct(
+        private readonly \Closure $handler,
+    ) {
     }
 
     public function execute(array $command, string $workingDirectory, int $timeout): RunResult

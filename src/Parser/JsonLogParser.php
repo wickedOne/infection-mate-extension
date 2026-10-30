@@ -19,7 +19,7 @@ use WickedOne\InfectionMateExtension\Filesystem\PathResolver;
  */
 class JsonLogParser
 {
-    public const BUCKETS = ['escaped', 'timeouted', 'killed', 'killedByStaticAnalysis', 'errored', 'syntaxErrors', 'uncovered', 'ignored'];
+    public const array BUCKETS = ['escaped', 'timeouted', 'killed', 'killedByStaticAnalysis', 'errored', 'syntaxErrors', 'uncovered', 'ignored'];
 
     public function __construct(
         private readonly PathResolver $paths,
