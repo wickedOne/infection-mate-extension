@@ -19,7 +19,7 @@
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^3.95.27",
-        "helgesverre/toon": "^3.2",
+        "helgesverre/toon": "^3.2.1",
         "infection/infection": "dev-add-json-logger-cli as 0.35.8",
         "mikey179/vfsstream": "^1.6.12",
         "phpstan/phpstan": "^2.3.4",
