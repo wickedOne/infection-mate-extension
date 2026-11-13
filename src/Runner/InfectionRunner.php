@@ -8,9 +8,9 @@
  * file that was distributed with this source code.
  */
 
-namespace WickedOne\InfectionMateExtension\Runner;
+namespace WickedOne\InfectionExtension\Runner;
 
-use WickedOne\InfectionMateExtension\Discovery\ConfigurationDiscovery;
+use WickedOne\InfectionExtension\Discovery\ConfigurationDiscovery;
 
 /**
  * @author wicliff wolda <wicliff.wolda@gmail.com>

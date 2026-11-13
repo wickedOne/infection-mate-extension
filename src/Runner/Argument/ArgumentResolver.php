@@ -8,10 +8,10 @@
  * file that was distributed with this source code.
  */
 
-namespace WickedOne\InfectionMateExtension\Runner\Argument;
+namespace WickedOne\InfectionExtension\Runner\Argument;
 
-use WickedOne\InfectionMateExtension\Filesystem\PathResolver;
-use WickedOne\InfectionMateExtension\Runner\Exception\InvalidArgumentException;
+use WickedOne\InfectionExtension\Filesystem\PathResolver;
+use WickedOne\InfectionExtension\Runner\Exception\InvalidArgumentException;
 
 /**
  * @author wicliff wolda <wicliff.wolda@gmail.com>

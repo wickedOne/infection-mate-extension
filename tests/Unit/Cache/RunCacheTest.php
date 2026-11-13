@@ -8,13 +8,13 @@
  * file that was distributed with this source code.
  */
 
-namespace WickedOne\InfectionMateExtension\Tests\Unit\Cache;
+namespace WickedOne\InfectionExtension\Tests\Unit\Cache;
 
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use WickedOne\InfectionMateExtension\Cache\RunCache;
-use WickedOne\InfectionMateExtension\Parser\MutantResult;
+use WickedOne\InfectionExtension\Cache\RunCache;
+use WickedOne\InfectionExtension\Parser\MutantResult;
 
 class RunCacheTest extends TestCase
 {

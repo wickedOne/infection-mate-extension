@@ -8,17 +8,17 @@
  * file that was distributed with this source code.
  */
 
-namespace WickedOne\InfectionMateExtension\Tests\Unit\Capability;
+namespace WickedOne\InfectionExtension\Tests\Unit\Capability;
 
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Symfony\AI\Mate\Encoding\ResponseEncoder;
-use WickedOne\InfectionMateExtension\Capability\DescribeMutatorTool;
-use WickedOne\InfectionMateExtension\Discovery\ConfigurationDiscovery;
-use WickedOne\InfectionMateExtension\Runner\InfectionRunner;
-use WickedOne\InfectionMateExtension\Runner\RunResult;
-use WickedOne\InfectionMateExtension\Tests\Support\FakeProcessExecutor;
+use WickedOne\InfectionExtension\Capability\DescribeMutatorTool;
+use WickedOne\InfectionExtension\Discovery\ConfigurationDiscovery;
+use WickedOne\InfectionExtension\Runner\InfectionRunner;
+use WickedOne\InfectionExtension\Runner\RunResult;
+use WickedOne\InfectionExtension\Tests\Support\FakeProcessExecutor;
 
 class DescribeMutatorToolTest extends TestCase
 {

@@ -13,10 +13,10 @@ namespace Unit\Runner\Argument;
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use WickedOne\InfectionMateExtension\Discovery\ConfigurationDiscovery;
-use WickedOne\InfectionMateExtension\Runner\Argument\InfectionCapabilities;
-use WickedOne\InfectionMateExtension\Runner\RunResult;
-use WickedOne\InfectionMateExtension\Tests\Support\FakeProcessExecutor;
+use WickedOne\InfectionExtension\Discovery\ConfigurationDiscovery;
+use WickedOne\InfectionExtension\Runner\Argument\InfectionCapabilities;
+use WickedOne\InfectionExtension\Runner\RunResult;
+use WickedOne\InfectionExtension\Tests\Support\FakeProcessExecutor;
 
 class InfectionCapabilitiesTest extends TestCase
 {

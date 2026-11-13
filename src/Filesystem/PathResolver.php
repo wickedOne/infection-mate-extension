@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-namespace WickedOne\InfectionMateExtension\Filesystem;
+namespace WickedOne\InfectionExtension\Filesystem;
 
 /**
  * @author wicliff wolda <wicliff.wolda@gmail.com>

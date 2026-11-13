@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-namespace WickedOne\InfectionMateExtension\Parser;
+namespace WickedOne\InfectionExtension\Parser;
 
 /**
  * @author wicliff wolda <wicliff.wolda@gmail.com>

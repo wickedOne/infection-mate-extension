@@ -8,10 +8,10 @@
  * file that was distributed with this source code.
  */
 
-namespace WickedOne\InfectionMateExtension\Tests\Unit\Parser;
+namespace WickedOne\InfectionExtension\Tests\Unit\Parser;
 
 use PHPUnit\Framework\TestCase;
-use WickedOne\InfectionMateExtension\Parser\MutantResult;
+use WickedOne\InfectionExtension\Parser\MutantResult;
 
 class MutantResultTest extends TestCase
 {

@@ -8,10 +8,10 @@
  * file that was distributed with this source code.
  */
 
-namespace WickedOne\InfectionMateExtension\Tests\Support;
+namespace WickedOne\InfectionExtension\Tests\Support;
 
-use WickedOne\InfectionMateExtension\Runner\ProcessExecutor;
-use WickedOne\InfectionMateExtension\Runner\RunResult;
+use WickedOne\InfectionExtension\Runner\ProcessExecutor;
+use WickedOne\InfectionExtension\Runner\RunResult;
 
 /**
  * records every call and answers through the handler instead of starting a process.

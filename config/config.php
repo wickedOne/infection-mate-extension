@@ -9,21 +9,21 @@
  */
 
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
-use WickedOne\InfectionMateExtension\Cache\RunCache;
-use WickedOne\InfectionMateExtension\Capability\ConfigResource;
-use WickedOne\InfectionMateExtension\Capability\DescribeMutatorTool;
-use WickedOne\InfectionMateExtension\Capability\EscapedTool;
-use WickedOne\InfectionMateExtension\Capability\MutantTool;
-use WickedOne\InfectionMateExtension\Capability\RunTool;
-use WickedOne\InfectionMateExtension\Capability\SummaryTool;
-use WickedOne\InfectionMateExtension\Discovery\ConfigurationDiscovery;
-use WickedOne\InfectionMateExtension\Filesystem\PathResolver;
-use WickedOne\InfectionMateExtension\Formatter\ResultFormatter;
-use WickedOne\InfectionMateExtension\Parser\JsonLogParser;
-use WickedOne\InfectionMateExtension\Runner\Argument\ArgumentResolver;
-use WickedOne\InfectionMateExtension\Runner\Argument\InfectionCapabilities;
-use WickedOne\InfectionMateExtension\Runner\InfectionRunner;
-use WickedOne\InfectionMateExtension\Runner\ProcessExecutor;
+use WickedOne\InfectionExtension\Cache\RunCache;
+use WickedOne\InfectionExtension\Capability\ConfigResource;
+use WickedOne\InfectionExtension\Capability\DescribeMutatorTool;
+use WickedOne\InfectionExtension\Capability\EscapedTool;
+use WickedOne\InfectionExtension\Capability\MutantTool;
+use WickedOne\InfectionExtension\Capability\RunTool;
+use WickedOne\InfectionExtension\Capability\SummaryTool;
+use WickedOne\InfectionExtension\Discovery\ConfigurationDiscovery;
+use WickedOne\InfectionExtension\Filesystem\PathResolver;
+use WickedOne\InfectionExtension\Formatter\ResultFormatter;
+use WickedOne\InfectionExtension\Parser\JsonLogParser;
+use WickedOne\InfectionExtension\Runner\Argument\ArgumentResolver;
+use WickedOne\InfectionExtension\Runner\Argument\InfectionCapabilities;
+use WickedOne\InfectionExtension\Runner\InfectionRunner;
+use WickedOne\InfectionExtension\Runner\ProcessExecutor;
 
 return static function (ContainerConfigurator $container): void {
     $services = $container->services()

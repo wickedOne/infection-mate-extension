@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-namespace WickedOne\InfectionMateExtension\Runner\Exception;
+namespace WickedOne\InfectionExtension\Runner\Exception;
 
 /**
  * @author wicliff wolda <wicliff.wolda@gmail.com>

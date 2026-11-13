@@ -8,9 +8,9 @@
  * file that was distributed with this source code.
  */
 
-namespace WickedOne\InfectionMateExtension\Cache;
+namespace WickedOne\InfectionExtension\Cache;
 
-use WickedOne\InfectionMateExtension\Parser\MutantResult;
+use WickedOne\InfectionExtension\Parser\MutantResult;
 
 /**
  * @author wicliff wolda <wicliff.wolda@gmail.com>

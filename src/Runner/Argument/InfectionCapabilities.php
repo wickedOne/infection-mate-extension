@@ -8,10 +8,10 @@
  * file that was distributed with this source code.
  */
 
-namespace WickedOne\InfectionMateExtension\Runner\Argument;
+namespace WickedOne\InfectionExtension\Runner\Argument;
 
-use WickedOne\InfectionMateExtension\Discovery\ConfigurationDiscovery;
-use WickedOne\InfectionMateExtension\Runner\ProcessExecutor;
+use WickedOne\InfectionExtension\Discovery\ConfigurationDiscovery;
+use WickedOne\InfectionExtension\Runner\ProcessExecutor;
 
 /**
  * the options and arguments of the installed infection's run command, read from its own console definition so

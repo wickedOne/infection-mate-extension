@@ -8,23 +8,23 @@
  * file that was distributed with this source code.
  */
 
-namespace WickedOne\InfectionMateExtension\Tests\Unit\Capability;
+namespace WickedOne\InfectionExtension\Tests\Unit\Capability;
 
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Symfony\AI\Mate\Encoding\ResponseEncoder;
-use WickedOne\InfectionMateExtension\Cache\RunCache;
-use WickedOne\InfectionMateExtension\Capability\RunTool;
-use WickedOne\InfectionMateExtension\Discovery\ConfigurationDiscovery;
-use WickedOne\InfectionMateExtension\Formatter\ResultFormatter;
-use WickedOne\InfectionMateExtension\Parser\JsonLogParser;
-use WickedOne\InfectionMateExtension\Runner\Argument\ArgumentResolver;
-use WickedOne\InfectionMateExtension\Runner\Argument\InfectionCapabilities;
-use WickedOne\InfectionMateExtension\Runner\InfectionRunner;
-use WickedOne\InfectionMateExtension\Runner\RunResult;
-use WickedOne\InfectionMateExtension\Tests\Support\FakePathResolver;
-use WickedOne\InfectionMateExtension\Tests\Support\FakeProcessExecutor;
+use WickedOne\InfectionExtension\Cache\RunCache;
+use WickedOne\InfectionExtension\Capability\RunTool;
+use WickedOne\InfectionExtension\Discovery\ConfigurationDiscovery;
+use WickedOne\InfectionExtension\Formatter\ResultFormatter;
+use WickedOne\InfectionExtension\Parser\JsonLogParser;
+use WickedOne\InfectionExtension\Runner\Argument\ArgumentResolver;
+use WickedOne\InfectionExtension\Runner\Argument\InfectionCapabilities;
+use WickedOne\InfectionExtension\Runner\InfectionRunner;
+use WickedOne\InfectionExtension\Runner\RunResult;
+use WickedOne\InfectionExtension\Tests\Support\FakePathResolver;
+use WickedOne\InfectionExtension\Tests\Support\FakeProcessExecutor;
 
 class RunToolTest extends TestCase
 {

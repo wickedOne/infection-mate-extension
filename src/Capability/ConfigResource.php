@@ -8,11 +8,11 @@
  * file that was distributed with this source code.
  */
 
-namespace WickedOne\InfectionMateExtension\Capability;
+namespace WickedOne\InfectionExtension\Capability;
 
 use Symfony\AI\Mate\Attribute\MateResource;
 use Symfony\AI\Mate\Encoding\ResponseEncoder;
-use WickedOne\InfectionMateExtension\Discovery\ConfigurationDiscovery;
+use WickedOne\InfectionExtension\Discovery\ConfigurationDiscovery;
 
 /**
  * @author wicliff wolda <wicliff.wolda@gmail.com>

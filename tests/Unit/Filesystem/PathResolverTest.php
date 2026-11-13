@@ -8,10 +8,10 @@
  * file that was distributed with this source code.
  */
 
-namespace WickedOne\InfectionMateExtension\Tests\Unit\Filesystem;
+namespace WickedOne\InfectionExtension\Tests\Unit\Filesystem;
 
 use PHPUnit\Framework\TestCase;
-use WickedOne\InfectionMateExtension\Filesystem\PathResolver;
+use WickedOne\InfectionExtension\Filesystem\PathResolver;
 
 class PathResolverTest extends TestCase
 {

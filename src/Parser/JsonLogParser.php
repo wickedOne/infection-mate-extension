@@ -8,9 +8,9 @@
  * file that was distributed with this source code.
  */
 
-namespace WickedOne\InfectionMateExtension\Parser;
+namespace WickedOne\InfectionExtension\Parser;
 
-use WickedOne\InfectionMateExtension\Filesystem\PathResolver;
+use WickedOne\InfectionExtension\Filesystem\PathResolver;
 
 /**
  * mutants have no id in the log: they are referenced by bucket and position within it.

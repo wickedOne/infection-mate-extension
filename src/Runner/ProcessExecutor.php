@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-namespace WickedOne\InfectionMateExtension\Runner;
+namespace WickedOne\InfectionExtension\Runner;
 
 use Symfony\Component\Process\Exception\ProcessTimedOutException;
 use Symfony\Component\Process\Process;

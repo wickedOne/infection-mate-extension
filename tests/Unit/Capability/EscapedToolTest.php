@@ -8,17 +8,17 @@
  * file that was distributed with this source code.
  */
 
-namespace WickedOne\InfectionMateExtension\Tests\Unit\Capability;
+namespace WickedOne\InfectionExtension\Tests\Unit\Capability;
 
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
 use Symfony\AI\Mate\Encoding\ResponseEncoder;
-use WickedOne\InfectionMateExtension\Cache\RunCache;
-use WickedOne\InfectionMateExtension\Capability\EscapedTool;
-use WickedOne\InfectionMateExtension\Formatter\ResultFormatter;
-use WickedOne\InfectionMateExtension\Parser\JsonLogParser;
-use WickedOne\InfectionMateExtension\Parser\MutantResult;
-use WickedOne\InfectionMateExtension\Tests\Support\FakePathResolver;
+use WickedOne\InfectionExtension\Cache\RunCache;
+use WickedOne\InfectionExtension\Capability\EscapedTool;
+use WickedOne\InfectionExtension\Formatter\ResultFormatter;
+use WickedOne\InfectionExtension\Parser\JsonLogParser;
+use WickedOne\InfectionExtension\Parser\MutantResult;
+use WickedOne\InfectionExtension\Tests\Support\FakePathResolver;
 
 class EscapedToolTest extends TestCase
 {

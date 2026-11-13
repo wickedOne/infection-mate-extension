@@ -2,7 +2,7 @@
 
 Read `CLAUDE.md` first: it holds the structure, design rules, testing constraints and conventions of this extension.
 
-- namespace `WickedOne\InfectionMateExtension`; tools are named `infection-*`, the resource is `infection://config`
+- namespace `WickedOne\InfectionExtension`; tools are named `infection-*`, the resource is `infection://config`
 - before finishing: `vendor/bin/phpunit`, `composer lint`, `composer test` (Infection, no escaped mutants) and `vendor/bin/mate skills:validate`
 - commit messages carry no AI attribution
 

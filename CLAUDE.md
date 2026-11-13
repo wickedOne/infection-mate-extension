@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-Infection extension for Symfony Mate (`wickedone/infection-mate-extension`, namespace `WickedOne\InfectionMateExtension`). It runs Infection once and lets the agent inspect the result (summary, escaped mutants, one mutant, mutator descriptions) without re-running.
+Infection extension for Symfony Mate (`wickedone/infection-mate-extension`, namespace `WickedOne\InfectionExtension`). It runs Infection once and lets the agent inspect the result (summary, escaped mutants, one mutant, mutator descriptions) without re-running.
 
 ## Structure
 

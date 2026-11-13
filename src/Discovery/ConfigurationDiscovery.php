@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-namespace WickedOne\InfectionMateExtension\Discovery;
+namespace WickedOne\InfectionExtension\Discovery;
 
 use ColinODell\Json5\Json5Decoder;
 

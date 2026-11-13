@@ -8,14 +8,14 @@
  * file that was distributed with this source code.
  */
 
-namespace WickedOne\InfectionMateExtension\Tests\Unit\Runner;
+namespace WickedOne\InfectionExtension\Tests\Unit\Runner;
 
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
-use WickedOne\InfectionMateExtension\Discovery\ConfigurationDiscovery;
-use WickedOne\InfectionMateExtension\Runner\InfectionRunner;
-use WickedOne\InfectionMateExtension\Runner\RunResult;
-use WickedOne\InfectionMateExtension\Tests\Support\FakeProcessExecutor;
+use WickedOne\InfectionExtension\Discovery\ConfigurationDiscovery;
+use WickedOne\InfectionExtension\Runner\InfectionRunner;
+use WickedOne\InfectionExtension\Runner\RunResult;
+use WickedOne\InfectionExtension\Tests\Support\FakeProcessExecutor;
 
 class InfectionRunnerTest extends TestCase
 {

@@ -8,12 +8,12 @@
  * file that was distributed with this source code.
  */
 
-namespace WickedOne\InfectionMateExtension\Tests\Unit\Parser;
+namespace WickedOne\InfectionExtension\Tests\Unit\Parser;
 
 use PHPUnit\Framework\TestCase;
-use WickedOne\InfectionMateExtension\Parser\JsonLogParser;
-use WickedOne\InfectionMateExtension\Parser\MutantResult;
-use WickedOne\InfectionMateExtension\Tests\Support\FakePathResolver;
+use WickedOne\InfectionExtension\Parser\JsonLogParser;
+use WickedOne\InfectionExtension\Parser\MutantResult;
+use WickedOne\InfectionExtension\Tests\Support\FakePathResolver;
 
 class JsonLogParserTest extends TestCase
 {

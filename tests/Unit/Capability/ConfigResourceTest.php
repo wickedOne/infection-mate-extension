@@ -8,13 +8,13 @@
  * file that was distributed with this source code.
  */
 
-namespace WickedOne\InfectionMateExtension\Tests\Unit\Capability;
+namespace WickedOne\InfectionExtension\Tests\Unit\Capability;
 
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
 use Symfony\AI\Mate\Encoding\ResponseEncoder;
-use WickedOne\InfectionMateExtension\Capability\ConfigResource;
-use WickedOne\InfectionMateExtension\Discovery\ConfigurationDiscovery;
+use WickedOne\InfectionExtension\Capability\ConfigResource;
+use WickedOne\InfectionExtension\Discovery\ConfigurationDiscovery;
 
 class ConfigResourceTest extends TestCase
 {

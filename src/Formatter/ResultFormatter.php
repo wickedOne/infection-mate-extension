@@ -8,10 +8,10 @@
  * file that was distributed with this source code.
  */
 
-namespace WickedOne\InfectionMateExtension\Formatter;
+namespace WickedOne\InfectionExtension\Formatter;
 
-use WickedOne\InfectionMateExtension\Filesystem\PathResolver;
-use WickedOne\InfectionMateExtension\Parser\MutantResult;
+use WickedOne\InfectionExtension\Filesystem\PathResolver;
+use WickedOne\InfectionExtension\Parser\MutantResult;
 
 /**
  * @author wicliff wolda <wicliff.wolda@gmail.com>

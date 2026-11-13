@@ -8,10 +8,10 @@
  * file that was distributed with this source code.
  */
 
-namespace WickedOne\InfectionMateExtension\Tests\Unit\Runner;
+namespace WickedOne\InfectionExtension\Tests\Unit\Runner;
 
 use PHPUnit\Framework\TestCase;
-use WickedOne\InfectionMateExtension\Runner\ProcessExecutor;
+use WickedOne\InfectionExtension\Runner\ProcessExecutor;
 
 class ProcessExecutorTest extends TestCase
 {

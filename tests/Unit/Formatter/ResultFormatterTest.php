@@ -8,13 +8,13 @@
  * file that was distributed with this source code.
  */
 
-namespace WickedOne\InfectionMateExtension\Tests\Unit\Formatter;
+namespace WickedOne\InfectionExtension\Tests\Unit\Formatter;
 
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
-use WickedOne\InfectionMateExtension\Formatter\ResultFormatter;
-use WickedOne\InfectionMateExtension\Parser\MutantResult;
-use WickedOne\InfectionMateExtension\Tests\Support\FakePathResolver;
+use WickedOne\InfectionExtension\Formatter\ResultFormatter;
+use WickedOne\InfectionExtension\Parser\MutantResult;
+use WickedOne\InfectionExtension\Tests\Support\FakePathResolver;
 
 class ResultFormatterTest extends TestCase
 {

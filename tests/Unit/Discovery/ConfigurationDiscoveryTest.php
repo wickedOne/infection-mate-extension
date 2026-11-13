@@ -8,11 +8,11 @@
  * file that was distributed with this source code.
  */
 
-namespace WickedOne\InfectionMateExtension\Tests\Unit\Discovery;
+namespace WickedOne\InfectionExtension\Tests\Unit\Discovery;
 
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
-use WickedOne\InfectionMateExtension\Discovery\ConfigurationDiscovery;
+use WickedOne\InfectionExtension\Discovery\ConfigurationDiscovery;
 
 class ConfigurationDiscoveryTest extends TestCase
 {

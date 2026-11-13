@@ -8,9 +8,9 @@
  * file that was distributed with this source code.
  */
 
-namespace WickedOne\InfectionMateExtension\Tests\Support;
+namespace WickedOne\InfectionExtension\Tests\Support;
 
-use WickedOne\InfectionMateExtension\Filesystem\PathResolver;
+use WickedOne\InfectionExtension\Filesystem\PathResolver;
 
 /**
  * realpath() cannot see vfs urls; existing paths resolve to themselves, links redirect elsewhere.

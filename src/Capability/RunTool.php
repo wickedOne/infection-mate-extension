@@ -8,16 +8,16 @@
  * file that was distributed with this source code.
  */
 
-namespace WickedOne\InfectionMateExtension\Capability;
+namespace WickedOne\InfectionExtension\Capability;
 
 use Symfony\AI\Mate\Attribute\MateTool;
 use Symfony\AI\Mate\Encoding\ResponseEncoder;
-use WickedOne\InfectionMateExtension\Cache\RunCache;
-use WickedOne\InfectionMateExtension\Formatter\ResultFormatter;
-use WickedOne\InfectionMateExtension\Parser\JsonLogParser;
-use WickedOne\InfectionMateExtension\Runner\Argument\ArgumentResolver;
-use WickedOne\InfectionMateExtension\Runner\Exception\InvalidArgumentException;
-use WickedOne\InfectionMateExtension\Runner\InfectionRunner;
+use WickedOne\InfectionExtension\Cache\RunCache;
+use WickedOne\InfectionExtension\Formatter\ResultFormatter;
+use WickedOne\InfectionExtension\Parser\JsonLogParser;
+use WickedOne\InfectionExtension\Runner\Argument\ArgumentResolver;
+use WickedOne\InfectionExtension\Runner\Exception\InvalidArgumentException;
+use WickedOne\InfectionExtension\Runner\InfectionRunner;
 
 /**
  * @author wicliff wolda <wicliff.wolda@gmail.com>
