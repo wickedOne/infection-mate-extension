@@ -28,8 +28,8 @@ class DescribeMutatorToolTest extends TestCase
 
         $data = $this->decode($this->tool($executor)->execute('Increment'));
 
-        $this->assertSame(['mutator' => 'Increment', 'description' => 'Increment: bumps a number'], $data);
-        $this->assertSame(['infection', 'describe', '--no-ansi', '--no-interaction', 'Increment'], $executor->lastCall()['command']);
+        self::assertSame(['mutator' => 'Increment', 'description' => 'Increment: bumps a number'], $data);
+        self::assertSame(['infection', 'describe', '--no-ansi', '--no-interaction', 'Increment'], $executor->lastCall()['command']);
     }
 
     public function testReturnsInfectionOutputAsHintWhenDescribeFails(): void
@@ -38,7 +38,7 @@ class DescribeMutatorToolTest extends TestCase
 
         $data = $this->decode($this->tool($executor)->execute('Nope'));
 
-        $this->assertSame(['error' => 'Could not describe "Nope".', 'hint' => 'no such mutator'], $data);
+        self::assertSame(['error' => 'Could not describe "Nope".', 'hint' => 'no such mutator'], $data);
     }
 
     public function testReturnsErrorWhenInfectionCannotBeStarted(): void
@@ -47,7 +47,7 @@ class DescribeMutatorToolTest extends TestCase
 
         $data = $this->decode($this->tool($executor)->execute('Plus'));
 
-        $this->assertSame(['error' => 'Could not start Infection: boom', 'hint' => 'Install it with "composer require --dev infection/infection".'], $data);
+        self::assertSame(['error' => 'Could not start Infection: boom', 'hint' => 'Install it with "composer require --dev infection/infection".'], $data);
     }
 
     /**
@@ -69,8 +69,8 @@ class DescribeMutatorToolTest extends TestCase
 
         $data = $this->decode($this->tool($executor)->execute($mutator));
 
-        $this->assertSame(['error' => 'Invalid mutator name.', 'hint' => 'Use the name as shown on a mutant, for example "Increment".'], $data);
-        $this->assertSame([], $executor->calls);
+        self::assertSame(['error' => 'Invalid mutator name.', 'hint' => 'Use the name as shown on a mutant, for example "Increment".'], $data);
+        self::assertSame([], $executor->calls);
     }
 
     /**
@@ -90,7 +90,7 @@ class DescribeMutatorToolTest extends TestCase
 
         $data = $this->decode($this->tool($executor)->execute($mutator));
 
-        $this->assertSame($mutator, $data['mutator']);
+        self::assertSame($mutator, $data['mutator']);
     }
 
     private function tool(FakeProcessExecutor $executor): DescribeMutatorTool
@@ -106,7 +106,7 @@ class DescribeMutatorToolTest extends TestCase
     private function decode(string $response): array
     {
         $decoded = ResponseEncoder::decode($response);
-        $this->assertIsArray($decoded);
+        self::assertIsArray($decoded);
 
         return $decoded;
     }

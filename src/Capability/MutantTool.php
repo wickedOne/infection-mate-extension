@@ -27,7 +27,7 @@ class MutantTool
     }
 
     /**
-     * @param string      $ref        mutant reference such as "escaped:3", as listed by infection-escaped
+     * @param string      $id         mutant id, as listed by infection-escaped
      * @param string|null $runId      run id from infection-run; defaults to the latest run
      * @param bool        $withOutput include the (truncated) test runner output for this mutant
      */
@@ -36,7 +36,7 @@ class MutantTool
         title: 'Inspect mutant',
         description: 'Inspect a single mutant: its diff, the surrounding source lines, and optionally the test output. Use before explaining why a mutant escaped or writing a test that kills it. Check whether the mutation changes behaviour at all; if not, it is an equivalent mutant and no test can kill it.'
     )]
-    public function execute(string $ref, ?string $runId = null, bool $withOutput = false): string
+    public function execute(string $id, ?string $runId = null, bool $withOutput = false): string
     {
         $run = $this->cache->load($runId);
 
@@ -45,11 +45,11 @@ class MutantTool
         }
 
         foreach ($run['mutants'] as $mutant) {
-            if ($mutant->ref() === $ref) {
+            if ($mutant->id === $id) {
                 return ResponseEncoder::encodeUntrusted($this->formatter->mutant($run['id'], $mutant, $withOutput));
             }
         }
 
-        return ResponseEncoder::encode(['error' => \sprintf('Mutant "%s" not found in run %s.', $ref, $run['id']), 'hint' => 'Use a ref from infection-escaped, in the form bucket:index.']);
+        return ResponseEncoder::encode(['error' => \sprintf('Mutant "%s" not found in run %s.', $id, $run['id']), 'hint' => 'Use an id from infection-escaped, and the runId it was listed in.']);
     }
 }

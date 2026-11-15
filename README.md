@@ -37,7 +37,7 @@ Agents call them through the `vendor/bin/mate` CLI:
 ```bash
 vendor/bin/mate tools:call infection-run --paths=src/Service --options='{"only-covering-test-cases":true}'
 vendor/bin/mate tools:call infection-escaped --bucket=escaped --file=src/Service/Calc.php
-vendor/bin/mate tools:call infection-mutant --ref=escaped:0 --withOutput=true
+vendor/bin/mate tools:call infection-mutant --id=<mutant id> --withOutput=true
 vendor/bin/mate resources:read infection://config
 ```
 
@@ -49,7 +49,7 @@ Responses are JSON. When [`helgesverre/toon`](https://github.com/HelgeSverre/too
 
 ## How it works
 
-`infection-run` passes `--logger-json=<file>` to Infection and reads that file back, so your configuration is used as is and never copied or modified. The file is a short-lived `.infection.mate.<token>.log.json` in the project root, deleted after every run. This needs an Infection version that has the `--logger-json` option ([infection/infection#3735](https://github.com/infection/infection/pull/3735)).
+`infection-run` passes `--logger-json=<file>` to Infection and reads that file back, so your configuration is used as is and never copied or modified. The file is a short-lived `.infection.mate.<token>.log.json` in the project root, deleted after every run.
 
 Parsed runs are cached in Mate's cache directory (the last 10) so the drill-down tools never re-run Infection.
 
@@ -57,7 +57,7 @@ Parsed runs are cached in Mate's cache directory (the last 10) so the drill-down
 
 These follow from what Infection reports today:
 
-- Infection's log has no mutant ids. A `ref` like `escaped:3` is valid only within one `runId`.
+- A mutant `id` is looked up in one cached `runId`. To re-run specific mutants, pass their ids to `infection-run` as the `id` option (`--options='{"id":["<id1>","<id2>"]}'`); Infection invalidates an id when the mutated source changes.
 - There is no per-mutant reason for ignored, skipped or uncovered mutants, only the bucket.
 - No history across Infection runs beyond the last 10 cached ones, so mutator effectiveness over time is not available.
 - Equivalent-mutant triage is left to the agent. Nothing is suppressed automatically.

@@ -13,7 +13,7 @@ namespace WickedOne\InfectionExtension\Parser;
 use WickedOne\InfectionExtension\Filesystem\PathResolver;
 
 /**
- * mutants have no id in the log: they are referenced by bucket and position within it.
+ * the id is the mutant hash infection logs per entry: it is what `infection run --id` takes.
  *
  * @author wicliff wolda <wicliff.wolda@gmail.com>
  */
@@ -42,12 +42,12 @@ class JsonLogParser
         $mutants = [];
 
         foreach (self::BUCKETS as $bucket) {
-            foreach (array_values($data[$bucket] ?? []) as $index => $entry) {
+            foreach ($data[$bucket] ?? [] as $entry) {
                 $file = (string) ($entry['mutator']['originalFilePath'] ?? '');
 
                 $mutants[] = new MutantResult(
                     $bucket,
-                    $index,
+                    (string) ($entry['id'] ?? ''),
                     (string) ($entry['mutator']['mutatorName'] ?? 'unknown'),
                     $this->relative($file, $roots),
                     (int) ($entry['mutator']['originalStartLine'] ?? 0),

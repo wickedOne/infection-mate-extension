@@ -19,36 +19,36 @@ class ProcessExecutorTest extends TestCase
     {
         $result = (new ProcessExecutor())->execute($this->php('fwrite(STDERR, "err\n"); usleep(200000); echo "out\n"; exit(3);'), __DIR__, 30);
 
-        $this->assertSame(3, $result->exitCode);
-        $this->assertSame("out\nerr\n", $result->output);
-        $this->assertNull($result->log);
-        $this->assertFalse($result->timedOut);
+        self::assertSame(3, $result->exitCode);
+        self::assertSame("out\nerr\n", $result->output);
+        self::assertNull($result->log);
+        self::assertFalse($result->timedOut);
     }
 
     public function testRunsInTheWorkingDirectory(): void
     {
         $result = (new ProcessExecutor())->execute($this->php('echo getcwd();'), __DIR__, 30);
 
-        $this->assertSame(0, $result->exitCode);
-        $this->assertSame(realpath(__DIR__), $result->output);
+        self::assertSame(0, $result->exitCode);
+        self::assertSame(realpath(__DIR__), $result->output);
     }
 
     public function testReportsTimeoutWithPartialOutput(): void
     {
         $result = (new ProcessExecutor())->execute($this->php('echo "partial"; sleep(5);'), __DIR__, 1);
 
-        $this->assertTrue($result->timedOut);
-        $this->assertSame(1, $result->exitCode);
-        $this->assertNull($result->log);
-        $this->assertSame('partial', $result->output);
+        self::assertTrue($result->timedOut);
+        self::assertSame(1, $result->exitCode);
+        self::assertNull($result->log);
+        self::assertSame('partial', $result->output);
     }
 
     public function testTimeoutOutputHasStandardOutputBeforeErrorOutput(): void
     {
         $result = (new ProcessExecutor())->execute($this->php('echo "out"; fwrite(STDERR, "err"); sleep(5);'), __DIR__, 1);
 
-        $this->assertTrue($result->timedOut);
-        $this->assertSame('outerr', $result->output);
+        self::assertTrue($result->timedOut);
+        self::assertSame('outerr', $result->output);
     }
 
     /**

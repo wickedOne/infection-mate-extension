@@ -74,66 +74,66 @@ class RunToolTest extends TestCase
     {
         $data = $this->error($this->tool->execute(timeout: 0));
 
-        $this->assertSame('Invalid timeout.', $data['error']);
+        self::assertSame('Invalid timeout.', $data['error']);
     }
 
     public function testAcceptsDoubleDotInsideFileName(): void
     {
         $data = $this->error($this->tool->execute(paths: ['src/Foo..Bar.php']));
 
-        $this->assertSame('Path "src/Foo..Bar.php" does not exist.', $data['error']);
+        self::assertSame('Path "src/Foo..Bar.php" does not exist.', $data['error']);
     }
 
     public function testRejectsPathEscapingProjectRoot(): void
     {
         $data = $this->error($this->tool->execute(paths: ['../x']));
 
-        $this->assertSame('Invalid path "../x".', $data['error']);
+        self::assertSame('Invalid path "../x".', $data['error']);
     }
 
     public function testRejectsAbsolutePath(): void
     {
         $data = $this->error($this->tool->execute(paths: ['/etc/passwd']));
 
-        $this->assertSame('Invalid path "/etc/passwd".', $data['error']);
+        self::assertSame('Invalid path "/etc/passwd".', $data['error']);
     }
 
     public function testRejectsPathStartingWithDash(): void
     {
         $data = $this->error($this->tool->execute(paths: ['--configuration=/tmp/evil.json']));
 
-        $this->assertSame('Invalid path "--configuration=/tmp/evil.json".', $data['error']);
+        self::assertSame('Invalid path "--configuration=/tmp/evil.json".', $data['error']);
     }
 
     public function testRejectsMissingPath(): void
     {
         $data = $this->error($this->tool->execute(paths: ['src/Missing.php']));
 
-        $this->assertSame('Path "src/Missing.php" does not exist.', $data['error']);
+        self::assertSame('Path "src/Missing.php" does not exist.', $data['error']);
     }
 
     public function testReturnsExactHintForInvalidTimeout(): void
     {
         $data = $this->error($this->tool->execute(timeout: -1));
 
-        $this->assertSame('Invalid timeout.', $data['error']);
-        $this->assertSame('Pass a number of seconds of at least 1, or omit it for the default.', $data['hint']);
-        $this->assertArrayNotHasKey('untrusted_data', $data);
+        self::assertSame('Invalid timeout.', $data['error']);
+        self::assertSame('Pass a number of seconds of at least 1, or omit it for the default.', $data['hint']);
+        self::assertArrayNotHasKey('untrusted_data', $data);
     }
 
     public function testAcceptsTimeoutOfOneSecond(): void
     {
         $data = $this->untrusted($this->tool->execute(timeout: 1));
 
-        $this->assertArrayNotHasKey('error', $data);
-        $this->assertArrayHasKey('runId', $data);
+        self::assertArrayNotHasKey('error', $data);
+        self::assertArrayHasKey('runId', $data);
     }
 
     public function testPassesFlagsValuesAndRepeatedValuesInOrderBeforePaths(): void
     {
         $this->tool->execute(['src/Calc.php', 'src'], ['git-diff-lines' => true, 'git-diff-base' => 'main', 'mutators' => '@default,!Plus', 'threads' => 4, 'filter' => ['a.php', 'b.php']], 30);
 
-        $this->assertSame(
+        self::assertSame(
             ['--git-diff-lines', '--git-diff-base=main', '--mutators=@default,!Plus', '--threads=4', '--filter=a.php', '--filter=b.php', 'src/Calc.php', 'src'],
             $this->extraArguments(),
         );
@@ -141,24 +141,24 @@ class RunToolTest extends TestCase
 
     public function testOptionsThatAreFalseOrNullAreLeftOut(): void
     {
-        $this->assertArrayHasKey('runId', $this->untrusted($this->tool->execute(options: ['git-diff-lines' => false, 'threads' => null])));
-        $this->assertSame([], $this->extraArguments());
+        self::assertArrayHasKey('runId', $this->untrusted($this->tool->execute(options: ['git-diff-lines' => false, 'threads' => null])));
+        self::assertSame([], $this->extraArguments());
     }
 
     public function testFlagsWithOptionalValueAcceptTrueAndAValue(): void
     {
         $this->tool->execute(options: ['show-mutations' => true]);
-        $this->assertSame(['--show-mutations'], $this->extraArguments());
+        self::assertSame(['--show-mutations'], $this->extraArguments());
 
         $this->tool->execute(options: ['show-mutations' => 'max']);
-        $this->assertSame(['--show-mutations=max'], $this->extraArguments());
+        self::assertSame(['--show-mutations=max'], $this->extraArguments());
     }
 
     public function testNumbersAreAcceptedAsValues(): void
     {
         $this->tool->execute(options: ['threads' => 1.5]);
 
-        $this->assertSame(['--threads=1.5'], $this->extraArguments());
+        self::assertSame(['--threads=1.5'], $this->extraArguments());
     }
 
     public function testNeedsNoOptionDefinitionWithoutOptions(): void
@@ -166,16 +166,16 @@ class RunToolTest extends TestCase
         $this->executor = new FakeProcessExecutor(fn (array $command, string $cwd): RunResult => \in_array('--help', $command, true) ? new RunResult(1, '', null) : $this->handle($command, $cwd));
         $this->buildTool();
 
-        $this->assertArrayHasKey('runId', $this->untrusted($this->tool->execute(['src'])));
+        self::assertArrayHasKey('runId', $this->untrusted($this->tool->execute(['src'])));
     }
 
     public function testRejectsAnOptionTheInstalledInfectionDoesNotKnow(): void
     {
         $data = $this->error($this->tool->execute(options: ['brand-new' => true]));
 
-        $this->assertSame('The installed Infection does not support the option "brand-new".', $data['error']);
-        $this->assertSame('Use one of: threads, mutators, git-diff-base, show-mutations, filter, git-diff-lines, only-covering-test-cases.', $data['hint']);
-        $this->assertCount(1, $this->executor->calls);
+        self::assertSame('The installed Infection does not support the option "brand-new".', $data['error']);
+        self::assertSame('Use one of: threads, mutators, git-diff-base, show-mutations, filter, git-diff-lines, only-covering-test-cases.', $data['hint']);
+        self::assertCount(1, $this->executor->calls);
     }
 
     public function testAcceptsAnOptionOnceTheInstalledInfectionKnowsIt(): void
@@ -185,7 +185,7 @@ class RunToolTest extends TestCase
 
         $this->tool->execute(options: ['brand-new' => true]);
 
-        $this->assertSame(['--brand-new'], $this->extraArguments());
+        self::assertSame(['--brand-new'], $this->extraArguments());
     }
 
     /**
@@ -203,15 +203,15 @@ class RunToolTest extends TestCase
     {
         $data = $this->error($this->tool->execute(options: [$name => 'x']));
 
-        $this->assertSame(\sprintf('The installed Infection does not support the option "%s".', $name), $data['error']);
-        $this->assertStringNotContainsString($name, $data['hint']);
+        self::assertSame(\sprintf('The installed Infection does not support the option "%s".', $name), $data['error']);
+        self::assertStringNotContainsString($name, $data['hint']);
     }
 
     public function testRejectsAListAsOptions(): void
     {
         $data = $this->error($this->tool->execute(options: ['threads']));
 
-        $this->assertSame('The installed Infection does not support the option "0".', $data['error']);
+        self::assertSame('The installed Infection does not support the option "0".', $data['error']);
     }
 
     public function testRejectsOptionsWhenTheDefinitionCannotBeRead(): void
@@ -221,32 +221,32 @@ class RunToolTest extends TestCase
 
         $data = $this->error($this->tool->execute(options: ['threads' => 2]));
 
-        $this->assertSame('Could not read the options of the installed Infection.', $data['error']);
-        $this->assertSame('Check that "infection run --help" works in the project, or leave options out.', $data['hint']);
+        self::assertSame('Could not read the options of the installed Infection.', $data['error']);
+        self::assertSame('Check that "infection run --help" works in the project, or leave options out.', $data['hint']);
     }
 
     public function testRejectsAValueForAFlag(): void
     {
         $data = $this->error($this->tool->execute(options: ['git-diff-lines' => 'main']));
 
-        $this->assertSame('The option "git-diff-lines" takes no value.', $data['error']);
-        $this->assertSame('Pass true to switch it on, or leave it out.', $data['hint']);
+        self::assertSame('The option "git-diff-lines" takes no value.', $data['error']);
+        self::assertSame('Pass true to switch it on, or leave it out.', $data['hint']);
     }
 
     public function testRejectsTrueForAnOptionThatNeedsAValue(): void
     {
         $data = $this->error($this->tool->execute(options: ['threads' => true]));
 
-        $this->assertSame('The option "threads" needs a value.', $data['error']);
-        $this->assertSame('Pass a string or number for it.', $data['hint']);
+        self::assertSame('The option "threads" needs a value.', $data['error']);
+        self::assertSame('Pass a string or number for it.', $data['hint']);
     }
 
     public function testRejectsAListForASingleValueOption(): void
     {
         $data = $this->error($this->tool->execute(options: ['threads' => ['1', '2']]));
 
-        $this->assertSame('The option "threads" takes a single value.', $data['error']);
-        $this->assertSame('Pass one string or number.', $data['hint']);
+        self::assertSame('The option "threads" takes a single value.', $data['error']);
+        self::assertSame('Pass one string or number.', $data['hint']);
     }
 
     /**
@@ -269,9 +269,9 @@ class RunToolTest extends TestCase
     {
         $data = $this->error($this->tool->execute(options: ['filter' => \is_array($value) ? $value : [$value]]));
 
-        $this->assertSame('Invalid value for the option "filter".', $data['error']);
-        $this->assertSame('Pass a non-empty string or number that does not start with a dash.', $data['hint']);
-        $this->assertCount(1, $this->executor->calls);
+        self::assertSame('Invalid value for the option "filter".', $data['error']);
+        self::assertSame('Pass a non-empty string or number that does not start with a dash.', $data['hint']);
+        self::assertCount(1, $this->executor->calls);
     }
 
     public function testValidatesValuesBeforeAskingInfection(): void
@@ -279,7 +279,7 @@ class RunToolTest extends TestCase
         $this->error($this->tool->execute(['../x'], ['threads' => 1]));
         $this->error($this->tool->execute(options: ['threads' => 1], timeout: 0));
 
-        $this->assertSame([], $this->executor->calls);
+        self::assertSame([], $this->executor->calls);
     }
 
     public function testRejectsPathsWhenInfectionNoLongerAcceptsThem(): void
@@ -289,8 +289,8 @@ class RunToolTest extends TestCase
 
         $data = $this->error($this->tool->execute(['src']));
 
-        $this->assertSame('The installed Infection does not accept paths.', $data['error']);
-        $this->assertSame('Update infection/infection, or leave paths out.', $data['hint']);
+        self::assertSame('The installed Infection does not accept paths.', $data['error']);
+        self::assertSame('Update infection/infection, or leave paths out.', $data['hint']);
     }
 
     public function testRunsWithoutOptionalFlagsByDefault(): void
@@ -298,40 +298,40 @@ class RunToolTest extends TestCase
         $this->tool->execute();
 
         $command = $this->executor->lastCall()['command'];
-        $this->assertSame('infection', $command[0]);
-        $this->assertMatchesRegularExpression('/^--logger-json=.*\/\.infection\.mate\.[0-9a-f]{12}\.log\.json$/', $command[1]);
-        $this->assertSame(['--no-progress', '--no-interaction', '--no-ansi'], \array_slice($command, 2));
+        self::assertSame('infection', $command[0]);
+        self::assertMatchesRegularExpression('/^--logger-json=.*\/\.infection\.mate\.[0-9a-f]{12}\.log\.json$/', $command[1]);
+        self::assertSame(['--no-progress', '--no-interaction', '--no-ansi'], \array_slice($command, 2));
     }
 
     public function testAcceptsProjectRootAndNestedFileAsPaths(): void
     {
         $data = $this->untrusted($this->tool->execute(paths: ['.', 'src/Calc.php']));
 
-        $this->assertArrayNotHasKey('error', $data);
-        $this->assertSame(['.', 'src/Calc.php'], $this->extraArguments());
+        self::assertArrayNotHasKey('error', $data);
+        self::assertSame(['.', 'src/Calc.php'], $this->extraArguments());
     }
 
     public function testAcceptsDirectoryPath(): void
     {
         $data = $this->untrusted($this->tool->execute(paths: ['src']));
 
-        $this->assertArrayNotHasKey('error', $data);
-        $this->assertSame(['src'], $this->extraArguments());
+        self::assertArrayNotHasKey('error', $data);
+        self::assertSame(['src'], $this->extraArguments());
     }
 
     public function testRejectsEmptyPath(): void
     {
         $data = $this->error($this->tool->execute(paths: ['']));
 
-        $this->assertSame('Invalid path "".', $data['error']);
-        $this->assertSame('Paths must be relative to the project root and stay inside it.', $data['hint']);
+        self::assertSame('Invalid path "".', $data['error']);
+        self::assertSame('Paths must be relative to the project root and stay inside it.', $data['hint']);
     }
 
     public function testRejectsPathWithDoubleDotSegment(): void
     {
         $data = $this->error($this->tool->execute(paths: ['src/../src/Calc.php']));
 
-        $this->assertSame('Invalid path "src/../src/Calc.php".', $data['error']);
+        self::assertSame('Invalid path "src/../src/Calc.php".', $data['error']);
     }
 
     public function testRejectsSymlinkResolvingOutsideProject(): void
@@ -340,9 +340,9 @@ class RunToolTest extends TestCase
 
         $data = $this->error($this->tool->execute(paths: ['link']));
 
-        $this->assertSame('Path "link" resolves outside the project.', $data['error']);
-        $this->assertSame('Paths must stay inside the project root.', $data['hint']);
-        $this->assertSame([], $this->executor->calls);
+        self::assertSame('Path "link" resolves outside the project.', $data['error']);
+        self::assertSame('Paths must stay inside the project root.', $data['hint']);
+        self::assertSame([], $this->executor->calls);
     }
 
     public function testRejectsSymlinkResolvingToSiblingSharingTheRootPrefix(): void
@@ -351,7 +351,7 @@ class RunToolTest extends TestCase
 
         $data = $this->error($this->tool->execute(paths: ['link']));
 
-        $this->assertSame('Path "link" resolves outside the project.', $data['error']);
+        self::assertSame('Path "link" resolves outside the project.', $data['error']);
     }
 
     public function testAcceptsSymlinkResolvingInsideProject(): void
@@ -360,15 +360,15 @@ class RunToolTest extends TestCase
 
         $data = $this->untrusted($this->tool->execute(paths: ['inner']));
 
-        $this->assertArrayNotHasKey('error', $data);
-        $this->assertSame(['inner'], $this->extraArguments());
+        self::assertArrayNotHasKey('error', $data);
+        self::assertSame(['inner'], $this->extraArguments());
     }
 
     public function testReturnsMissingPathHint(): void
     {
         $data = $this->error($this->tool->execute(paths: ['src/Missing.php']));
 
-        $this->assertSame('Check the path relative to the project root.', $data['hint']);
+        self::assertSame('Check the path relative to the project root.', $data['hint']);
     }
 
     public function testReturnsSummaryWithRunIdAndExitCode(): void
@@ -377,12 +377,12 @@ class RunToolTest extends TestCase
 
         $data = $this->untrusted($this->tool->execute());
 
-        $this->assertSame($this->cache->ids()[0], $data['runId']);
-        $this->assertSame(2, $data['exitCode']);
-        $this->assertSame(50, $data['stats']['msi']);
-        $this->assertSame(['src/Calc.php' => 1, 'src/Str/Slugger.php' => 1], $data['escapedByFile']);
-        $this->assertSame(['GreaterThanOrEqualTo' => 1, 'Increment' => 1], $data['escapedByMutator']);
-        $this->assertSame(['runId', 'exitCode', 'stats', 'escapedByFile', 'escapedByMutator', 'hint'], array_keys($data));
+        self::assertSame($this->cache->ids()[0], $data['runId']);
+        self::assertSame(2, $data['exitCode']);
+        self::assertSame(50, $data['stats']['msi']);
+        self::assertSame(['src/Calc.php' => 1, 'src/Str/Slugger.php' => 1], $data['escapedByFile']);
+        self::assertSame(['GreaterThanOrEqualTo' => 1, 'Increment' => 1], $data['escapedByMutator']);
+        self::assertSame(['runId', 'exitCode', 'stats', 'escapedByFile', 'escapedByMutator', 'hint'], array_keys($data));
     }
 
     public function testStillReturnsSummaryWithWarningWhenTheRunCannotBeCached(): void
@@ -392,12 +392,12 @@ class RunToolTest extends TestCase
 
         $data = $this->untrusted($this->tool->execute());
 
-        $this->assertArrayNotHasKey('error', $data);
-        $this->assertNull($data['runId']);
-        $this->assertSame(50, $data['stats']['msi']);
-        $this->assertSame(['src/Calc.php' => 1, 'src/Str/Slugger.php' => 1], $data['escapedByFile']);
-        $this->assertStringStartsWith('Run could not be cached, so infection-escaped, infection-mutant and infection-summary cannot follow up: Cannot create cache directory', $data['warning']);
-        $this->assertSame('warning', array_key_last($data));
+        self::assertArrayNotHasKey('error', $data);
+        self::assertNull($data['runId']);
+        self::assertSame(50, $data['stats']['msi']);
+        self::assertSame(['src/Calc.php' => 1, 'src/Str/Slugger.php' => 1], $data['escapedByFile']);
+        self::assertStringStartsWith('Run could not be cached, so infection-escaped, infection-mutant and infection-summary cannot follow up: Cannot create cache directory', $data['warning']);
+        self::assertSame('warning', array_key_last($data));
     }
 
     public function testStoresRunInCacheWithExitCode(): void
@@ -407,17 +407,17 @@ class RunToolTest extends TestCase
         $data = $this->untrusted($this->tool->execute());
 
         $run = $this->cache->load($data['runId']);
-        $this->assertNotNull($run);
-        $this->assertSame(1, $run['exitCode']);
-        $this->assertCount(6, $run['mutants']);
-        $this->assertSame('src/Calc.php', $run['mutants'][0]->file);
+        self::assertNotNull($run);
+        self::assertSame(1, $run['exitCode']);
+        self::assertCount(6, $run['mutants']);
+        self::assertSame('src/Calc.php', $run['mutants'][0]->file);
     }
 
     public function testPropagatesZeroExitCode(): void
     {
         $data = $this->untrusted($this->tool->execute());
 
-        $this->assertSame(0, $data['exitCode']);
+        self::assertSame(0, $data['exitCode']);
     }
 
     public function testReturnsTimeoutErrorWithUntrustedOutput(): void
@@ -426,10 +426,10 @@ class RunToolTest extends TestCase
 
         $data = $this->untrusted($this->tool->execute(timeout: 1));
 
-        $this->assertSame('Infection timed out.', $data['error']);
-        $this->assertSame('Narrow the run with paths or options such as git-diff-lines or only-covering-test-cases, or raise timeout.', $data['hint']);
-        $this->assertSame('partial out partial err', $data['output']);
-        $this->assertSame([], $this->cache->ids());
+        self::assertSame('Infection timed out.', $data['error']);
+        self::assertSame('Narrow the run with paths or options such as git-diff-lines or only-covering-test-cases, or raise timeout.', $data['hint']);
+        self::assertSame('partial out partial err', $data['output']);
+        self::assertSame([], $this->cache->ids());
     }
 
     public function testReturnsErrorWhenInfectionCannotBeStarted(): void
@@ -438,9 +438,9 @@ class RunToolTest extends TestCase
 
         $data = $this->error($this->tool->execute());
 
-        $this->assertSame('Could not run Infection: boom', $data['error']);
-        $this->assertSame('Check that infection/infection is installed (composer require --dev infection/infection) and that infection.json5 is valid.', $data['hint']);
-        $this->assertArrayNotHasKey('untrusted_data', $data);
+        self::assertSame('Could not run Infection: boom', $data['error']);
+        self::assertSame('Check that infection/infection is installed (composer require --dev infection/infection) and that infection.json5 is valid.', $data['hint']);
+        self::assertArrayNotHasKey('untrusted_data', $data);
     }
 
     public function testReturnsNoLogErrorWithUntrustedOutput(): void
@@ -449,10 +449,10 @@ class RunToolTest extends TestCase
 
         $data = $this->untrusted($this->tool->execute());
 
-        $this->assertSame('Infection produced no JSON log.', $data['error']);
-        $this->assertSame('It likely failed before mutating: no coverage driver (pcov/xdebug), failing initial tests, or invalid config. See output.', $data['hint']);
-        $this->assertSame('outerr', $data['output']);
-        $this->assertSame([], $this->cache->ids());
+        self::assertSame('Infection produced no JSON log.', $data['error']);
+        self::assertSame('It likely failed before mutating: no coverage driver (pcov/xdebug), failing initial tests, or invalid config. See output.', $data['hint']);
+        self::assertSame('outerr', $data['output']);
+        self::assertSame([], $this->cache->ids());
     }
 
     public function testReturnsInvalidLogErrorWithUntrustedOutput(): void
@@ -461,11 +461,11 @@ class RunToolTest extends TestCase
 
         $data = $this->untrusted($this->tool->execute());
 
-        $this->assertStringStartsWith('Could not read the Infection log: ', $data['error']);
-        $this->assertGreaterThan(\strlen('Could not read the Infection log: '), \strlen($data['error']));
-        $this->assertSame('Run infection manually to inspect the problem.', $data['hint']);
-        $this->assertSame('some output', $data['output']);
-        $this->assertSame([], $this->cache->ids());
+        self::assertStringStartsWith('Could not read the Infection log: ', $data['error']);
+        self::assertGreaterThan(\strlen('Could not read the Infection log: '), \strlen($data['error']));
+        self::assertSame('Run infection manually to inspect the problem.', $data['hint']);
+        self::assertSame('some output', $data['output']);
+        self::assertSame([], $this->cache->ids());
     }
 
     public function testReturnsErrorForLogWithoutStats(): void
@@ -474,7 +474,7 @@ class RunToolTest extends TestCase
 
         $data = $this->untrusted($this->tool->execute());
 
-        $this->assertSame('Could not read the Infection log: Not an Infection JSON log: "stats" is missing.', $data['error']);
+        self::assertSame('Could not read the Infection log: Not an Infection JSON log: "stats" is missing.', $data['error']);
     }
 
     public function testKeepsOnlyTheLastTwoThousandBytesOfOutput(): void
@@ -483,7 +483,7 @@ class RunToolTest extends TestCase
 
         $data = $this->untrusted($this->tool->execute());
 
-        $this->assertSame(str_repeat('B', 2000), $data['output']);
+        self::assertSame(str_repeat('B', 2000), $data['output']);
     }
 
     public function testKeepsShortOutputUntouched(): void
@@ -492,7 +492,7 @@ class RunToolTest extends TestCase
 
         $data = $this->untrusted($this->tool->execute());
 
-        $this->assertSame(str_repeat('A', 2000), $data['output']);
+        self::assertSame(str_repeat('A', 2000), $data['output']);
     }
 
     public function testTruncatesOutputWithoutSplittingMultibyteCharacters(): void
@@ -501,15 +501,15 @@ class RunToolTest extends TestCase
 
         $data = $this->untrusted($this->tool->execute());
 
-        $this->assertSame(str_repeat('é', 1000).'x', $data['output']);
-        $this->assertTrue(mb_check_encoding($data['output'], 'UTF-8'));
+        self::assertSame(str_repeat('é', 1000).'x', $data['output']);
+        self::assertTrue(mb_check_encoding($data['output'], 'UTF-8'));
     }
 
     public function testDoesNotLeaveTemporaryConfigBehind(): void
     {
         $this->tool->execute();
 
-        $this->assertSame([], array_values(array_diff(scandir($this->root) ?: [], ['.', '..', 'src', 'cache'])));
+        self::assertSame([], array_values(array_diff(scandir($this->root) ?: [], ['.', '..', 'src', 'cache'])));
     }
 
     /**
@@ -594,7 +594,7 @@ class RunToolTest extends TestCase
     private function decode(string $response): array
     {
         $decoded = ResponseEncoder::decode($response);
-        $this->assertIsArray($decoded);
+        self::assertIsArray($decoded);
 
         return $decoded;
     }
@@ -605,8 +605,8 @@ class RunToolTest extends TestCase
     private function untrusted(string $response): array
     {
         $decoded = $this->decode($response);
-        $this->assertSame(ResponseEncoder::UNTRUSTED_NOTICE, $decoded['_security_notice']);
-        $this->assertIsArray($decoded['untrusted_data']);
+        self::assertSame(ResponseEncoder::UNTRUSTED_NOTICE, $decoded['_security_notice']);
+        self::assertIsArray($decoded['untrusted_data']);
 
         return $decoded['untrusted_data'];
     }
@@ -617,9 +617,9 @@ class RunToolTest extends TestCase
     private function error(string $response): array
     {
         $decoded = ResponseEncoder::decode($response);
-        $this->assertIsArray($decoded);
-        $this->assertArrayHasKey('error', $decoded);
-        $this->assertArrayHasKey('hint', $decoded);
+        self::assertIsArray($decoded);
+        self::assertArrayHasKey('error', $decoded);
+        self::assertArrayHasKey('hint', $decoded);
 
         return $decoded;
     }

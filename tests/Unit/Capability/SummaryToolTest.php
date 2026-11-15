@@ -45,14 +45,14 @@ class SummaryToolTest extends TestCase
 
         $decoded = $this->decode($this->tool->execute($runId));
 
-        $this->assertSame(ResponseEncoder::UNTRUSTED_NOTICE, $decoded['_security_notice']);
+        self::assertSame(ResponseEncoder::UNTRUSTED_NOTICE, $decoded['_security_notice']);
         $data = $decoded['untrusted_data'];
-        $this->assertSame($runId, $data['runId']);
-        $this->assertSame(2, $data['exitCode']);
-        $this->assertSame(50, $data['stats']['msi']);
-        $this->assertSame(['src/Calc.php' => 1, 'src/Str/Slugger.php' => 1], $data['escapedByFile']);
-        $this->assertSame(['GreaterThanOrEqualTo' => 1, 'Increment' => 1], $data['escapedByMutator']);
-        $this->assertStringContainsString('infection-escaped', $data['hint']);
+        self::assertSame($runId, $data['runId']);
+        self::assertSame(2, $data['exitCode']);
+        self::assertSame(50, $data['stats']['msi']);
+        self::assertSame(['src/Calc.php' => 1, 'src/Str/Slugger.php' => 1], $data['escapedByFile']);
+        self::assertSame(['GreaterThanOrEqualTo' => 1, 'Increment' => 1], $data['escapedByMutator']);
+        self::assertStringContainsString('infection-escaped', $data['hint']);
     }
 
     public function testListsRecentRunsInsideUntrustedData(): void
@@ -61,7 +61,7 @@ class SummaryToolTest extends TestCase
 
         $decoded = $this->decode($this->tool->execute($runId));
 
-        $this->assertSame([$runId], $decoded['untrusted_data']['recentRuns']);
+        self::assertSame([$runId], $decoded['untrusted_data']['recentRuns']);
     }
 
     public function testSummarisesLatestRunWhenRunIdIsOmitted(): void
@@ -71,8 +71,8 @@ class SummaryToolTest extends TestCase
 
         $decoded = $this->decode($this->tool->execute());
 
-        $this->assertSame($newer, $decoded['untrusted_data']['runId']);
-        $this->assertSame([$newer, $older], $decoded['untrusted_data']['recentRuns']);
+        self::assertSame($newer, $decoded['untrusted_data']['runId']);
+        self::assertSame([$newer, $older], $decoded['untrusted_data']['recentRuns']);
     }
 
     public function testListsAtMostFiveRecentRuns(): void
@@ -84,7 +84,7 @@ class SummaryToolTest extends TestCase
 
         $decoded = $this->decode($this->tool->execute());
 
-        $this->assertSame(\array_slice(array_reverse($ids), 0, 5), $decoded['untrusted_data']['recentRuns']);
+        self::assertSame(\array_slice(array_reverse($ids), 0, 5), $decoded['untrusted_data']['recentRuns']);
     }
 
     public function testReturnsErrorForUnknownRun(): void
@@ -93,9 +93,9 @@ class SummaryToolTest extends TestCase
 
         $decoded = $this->decode($this->tool->execute('r000000000'));
 
-        $this->assertSame('Run not found.', $decoded['error']);
-        $this->assertSame('Call infection-run first.', $decoded['hint']);
-        $this->assertArrayNotHasKey('untrusted_data', $decoded);
+        self::assertSame('Run not found.', $decoded['error']);
+        self::assertSame('Call infection-run first.', $decoded['hint']);
+        self::assertArrayNotHasKey('untrusted_data', $decoded);
     }
 
     private function seedRun(): string
@@ -111,7 +111,7 @@ class SummaryToolTest extends TestCase
     private function decode(string $response): array
     {
         $decoded = ResponseEncoder::decode($response);
-        $this->assertIsArray($decoded);
+        self::assertIsArray($decoded);
 
         return $decoded;
     }

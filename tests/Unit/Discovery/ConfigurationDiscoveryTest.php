@@ -30,7 +30,7 @@ class ConfigurationDiscoveryTest extends TestCase
 
     public function testDetectReturnsNullWhenNoConfigExists(): void
     {
-        $this->assertNull($this->detector()->detect());
+        self::assertNull($this->detector()->detect());
     }
 
     public function testDetectPrefersJson5OverJson(): void
@@ -38,7 +38,7 @@ class ConfigurationDiscoveryTest extends TestCase
         $this->write('infection.json', '{}');
         $this->write('infection.json5', '{}');
 
-        $this->assertSame('infection.json5', $this->detector()->detect());
+        self::assertSame('infection.json5', $this->detector()->detect());
     }
 
     public function testDetectPrefersJsonOverDistFiles(): void
@@ -47,14 +47,14 @@ class ConfigurationDiscoveryTest extends TestCase
         $this->write('infection.json5.dist', '{}');
         $this->write('infection.json', '{}');
 
-        $this->assertSame('infection.json', $this->detector()->detect());
+        self::assertSame('infection.json', $this->detector()->detect());
     }
 
     public function testDetectFallsBackToDistFiles(): void
     {
         $this->write('infection.json.dist', '{}');
 
-        $this->assertSame('infection.json.dist', $this->detector()->detect());
+        self::assertSame('infection.json.dist', $this->detector()->detect());
     }
 
     public function testDetectFindsJson5DistBeforeJsonDist(): void
@@ -62,19 +62,19 @@ class ConfigurationDiscoveryTest extends TestCase
         $this->write('infection.json.dist', '{}');
         $this->write('infection.json5.dist', '{}');
 
-        $this->assertSame('infection.json5.dist', $this->detector()->detect());
+        self::assertSame('infection.json5.dist', $this->detector()->detect());
     }
 
     public function testDetectIgnoresDirectoryWithConfigName(): void
     {
         mkdir($this->root.'/infection.json5');
 
-        $this->assertNull($this->detector()->detect());
+        self::assertNull($this->detector()->detect());
     }
 
     public function testReadReturnsEmptyArrayWhenNoConfigExists(): void
     {
-        $this->assertSame([], $this->detector()->read());
+        self::assertSame([], $this->detector()->read());
     }
 
     public function testReadDecodesJson5WithCommentsAndTrailingCommas(): void
@@ -93,21 +93,21 @@ class ConfigurationDiscoveryTest extends TestCase
 
         $config = $this->detector()->read();
 
-        $this->assertSame(['source' => ['directories' => ['src']], 'minMsi' => 80, 'minCoveredMsi' => 90], $config);
+        self::assertSame(['source' => ['directories' => ['src']], 'minMsi' => 80, 'minCoveredMsi' => 90], $config);
     }
 
     public function testReadDecodesPlainJson(): void
     {
         $this->write('infection.json', '{"timeout": 10, "logs": {"text": "build/infection.log"}}');
 
-        $this->assertSame(['timeout' => 10, 'logs' => ['text' => 'build/infection.log']], $this->detector()->read());
+        self::assertSame(['timeout' => 10, 'logs' => ['text' => 'build/infection.log']], $this->detector()->read());
     }
 
     public function testReadReturnsEmptyArrayWhenConfigIsNotAnObject(): void
     {
         $this->write('infection.json', '"just a string"');
 
-        $this->assertSame([], $this->detector()->read());
+        self::assertSame([], $this->detector()->read());
     }
 
     public function testReadThrowsOnMalformedConfig(): void
@@ -121,21 +121,21 @@ class ConfigurationDiscoveryTest extends TestCase
 
     public function testBinaryFallsBackToPathLookupWithoutLocalInstall(): void
     {
-        $this->assertSame(['infection'], $this->detector()->binary());
+        self::assertSame(['infection'], $this->detector()->binary());
     }
 
     public function testBinaryUsesProjectLocalInstallWhenPresent(): void
     {
         $this->write('vendor/bin/infection', '#!/usr/bin/env php');
 
-        $this->assertSame([\PHP_BINARY, $this->root.'/vendor/bin/infection'], $this->detector()->binary());
+        self::assertSame([\PHP_BINARY, $this->root.'/vendor/bin/infection'], $this->detector()->binary());
     }
 
     public function testReadReturnsEmptyArrayWhenConfigIsUnreadable(): void
     {
         $this->makeUnreadableConfig();
 
-        $this->assertSame([], (new ConfigurationDiscovery($this->root))->read());
+        self::assertSame([], (new ConfigurationDiscovery($this->root))->read());
     }
 
     private function write(string $relativePath, string $contents): void

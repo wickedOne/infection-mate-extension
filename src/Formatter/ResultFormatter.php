@@ -65,7 +65,7 @@ class ResultFormatter
             'offset' => $offset,
             'count' => \count($page),
             'mutants' => array_map(fn (MutantResult $m): array => [
-                'ref' => $m->ref(),
+                'id' => $m->id,
                 'mutator' => $m->mutator,
                 'file' => $m->file,
                 'line' => $m->line,
@@ -81,7 +81,7 @@ class ResultFormatter
     {
         $payload = [
             'runId' => $runId,
-            'ref' => $mutant->ref(),
+            'id' => $mutant->id,
             'bucket' => $mutant->bucket,
             'mutator' => $mutant->mutator,
             'file' => $mutant->file,

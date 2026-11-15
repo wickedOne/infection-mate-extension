@@ -46,9 +46,9 @@ class EscapedToolTest extends TestCase
 
         $data = $this->untrusted($this->tool->execute());
 
-        $this->assertSame($runId, $data['runId']);
-        $this->assertSame(2, $data['total']);
-        $this->assertSame(['escaped:0', 'escaped:1'], array_column($data['mutants'], 'ref'));
+        self::assertSame($runId, $data['runId']);
+        self::assertSame(2, $data['total']);
+        self::assertSame(['escaped-0', 'escaped-1'], array_column($data['mutants'], 'id'));
     }
 
     public function testListsFromLatestRunWhenRunIdIsOmitted(): void
@@ -58,7 +58,7 @@ class EscapedToolTest extends TestCase
 
         $data = $this->untrusted($this->tool->execute());
 
-        $this->assertSame($newer, $data['runId']);
+        self::assertSame($newer, $data['runId']);
     }
 
     public function testListsRequestedRunById(): void
@@ -67,7 +67,7 @@ class EscapedToolTest extends TestCase
 
         $data = $this->untrusted($this->tool->execute($runId, 'killed'));
 
-        $this->assertSame($runId, $data['runId']);
+        self::assertSame($runId, $data['runId']);
     }
 
     public function testFiltersByBucket(): void
@@ -78,9 +78,9 @@ class EscapedToolTest extends TestCase
         $killed = $this->untrusted($this->tool->execute(null, 'killed'));
         $uncovered = $this->untrusted($this->tool->execute(null, 'uncovered'));
 
-        $this->assertSame(['timeouted:0'], array_column($timeouted['mutants'], 'ref'));
-        $this->assertSame(['killed:0', 'killed:1'], array_column($killed['mutants'], 'ref'));
-        $this->assertSame(['uncovered:0'], array_column($uncovered['mutants'], 'ref'));
+        self::assertSame(['timeouted-0'], array_column($timeouted['mutants'], 'id'));
+        self::assertSame(['killed-0', 'killed-1'], array_column($killed['mutants'], 'id'));
+        self::assertSame(['uncovered-0'], array_column($uncovered['mutants'], 'id'));
     }
 
     public function testReturnsEmptyListForBucketWithoutMutants(): void
@@ -89,8 +89,8 @@ class EscapedToolTest extends TestCase
 
         $data = $this->untrusted($this->tool->execute(null, 'errored'));
 
-        $this->assertSame(0, $data['total']);
-        $this->assertSame([], $data['mutants']);
+        self::assertSame(0, $data['total']);
+        self::assertSame([], $data['mutants']);
     }
 
     public function testFiltersByFile(): void
@@ -99,8 +99,8 @@ class EscapedToolTest extends TestCase
 
         $data = $this->untrusted($this->tool->execute(null, 'escaped', 'src/Calc.php'));
 
-        $this->assertSame(1, $data['total']);
-        $this->assertSame('escaped:0', $data['mutants'][0]['ref']);
+        self::assertSame(1, $data['total']);
+        self::assertSame('escaped-0', $data['mutants'][0]['id']);
     }
 
     public function testFiltersByMutator(): void
@@ -109,8 +109,8 @@ class EscapedToolTest extends TestCase
 
         $data = $this->untrusted($this->tool->execute(null, 'escaped', null, 'Increment'));
 
-        $this->assertSame(1, $data['total']);
-        $this->assertSame('escaped:1', $data['mutants'][0]['ref']);
+        self::assertSame(1, $data['total']);
+        self::assertSame('escaped-1', $data['mutants'][0]['id']);
     }
 
     public function testPagesWithLimitAndOffset(): void
@@ -119,10 +119,10 @@ class EscapedToolTest extends TestCase
 
         $data = $this->untrusted($this->tool->execute(null, 'escaped', null, null, 1, 1));
 
-        $this->assertSame(2, $data['total']);
-        $this->assertSame(1, $data['offset']);
-        $this->assertSame(1, $data['count']);
-        $this->assertSame('escaped:1', $data['mutants'][0]['ref']);
+        self::assertSame(2, $data['total']);
+        self::assertSame(1, $data['offset']);
+        self::assertSame(1, $data['count']);
+        self::assertSame('escaped-1', $data['mutants'][0]['id']);
     }
 
     public function testClampsNonPositiveLimitToOne(): void
@@ -131,7 +131,7 @@ class EscapedToolTest extends TestCase
 
         $data = $this->untrusted($this->tool->execute(null, 'escaped', null, null, 0));
 
-        $this->assertSame(1, $data['count']);
+        self::assertSame(1, $data['count']);
     }
 
     public function testClampsNegativeOffsetToZero(): void
@@ -140,8 +140,8 @@ class EscapedToolTest extends TestCase
 
         $data = $this->untrusted($this->tool->execute(null, 'escaped', null, null, 20, -5));
 
-        $this->assertSame(0, $data['offset']);
-        $this->assertSame(2, $data['count']);
+        self::assertSame(0, $data['offset']);
+        self::assertSame(2, $data['count']);
     }
 
     public function testReturnsErrorForUnknownBucket(): void
@@ -150,9 +150,9 @@ class EscapedToolTest extends TestCase
 
         $data = $this->decode($this->tool->execute(null, 'bogus'));
 
-        $this->assertSame('Unknown bucket "bogus".', $data['error']);
-        $this->assertSame('Use one of: '.implode(', ', JsonLogParser::BUCKETS), $data['hint']);
-        $this->assertArrayNotHasKey('untrusted_data', $data);
+        self::assertSame('Unknown bucket "bogus".', $data['error']);
+        self::assertSame('Use one of: '.implode(', ', JsonLogParser::BUCKETS), $data['hint']);
+        self::assertArrayNotHasKey('untrusted_data', $data);
     }
 
     public function testReturnsErrorForUnknownRun(): void
@@ -164,16 +164,16 @@ class EscapedToolTest extends TestCase
 
         $data = $this->decode($this->tool->execute('r000000000'));
 
-        $this->assertSame('Run not found.', $data['error']);
-        $this->assertSame('Call infection-run first. Recent run ids: '.implode(', ', \array_slice(array_reverse($ids), 0, 5)), $data['hint']);
+        self::assertSame('Run not found.', $data['error']);
+        self::assertSame('Call infection-run first. Recent run ids: '.implode(', ', \array_slice(array_reverse($ids), 0, 5)), $data['hint']);
     }
 
     public function testReturnsErrorWhenNoRunExists(): void
     {
         $data = $this->decode($this->tool->execute());
 
-        $this->assertSame('Run not found.', $data['error']);
-        $this->assertSame('Call infection-run first. Recent run ids: ', $data['hint']);
+        self::assertSame('Run not found.', $data['error']);
+        self::assertSame('Call infection-run first. Recent run ids: ', $data['hint']);
     }
 
     public function testPagesTwentyMutantsByDefault(): void
@@ -182,29 +182,29 @@ class EscapedToolTest extends TestCase
 
         $data = $this->untrusted($this->tool->execute());
 
-        $this->assertSame(150, $data['total']);
-        $this->assertSame(20, $data['count']);
-        $this->assertSame(0, $data['offset']);
-        $this->assertSame('escaped:0', $data['mutants'][0]['ref']);
-        $this->assertSame('escaped:19', $data['mutants'][19]['ref']);
+        self::assertSame(150, $data['total']);
+        self::assertSame(20, $data['count']);
+        self::assertSame(0, $data['offset']);
+        self::assertSame('escaped-0', $data['mutants'][0]['id']);
+        self::assertSame('escaped-19', $data['mutants'][19]['id']);
     }
 
     public function testClampsLimitToOneHundred(): void
     {
         $this->seedMany(150);
 
-        $this->assertSame(1, $this->untrusted($this->tool->execute(null, 'escaped', null, null, 1))['count']);
-        $this->assertSame(99, $this->untrusted($this->tool->execute(null, 'escaped', null, null, 99))['count']);
-        $this->assertSame(100, $this->untrusted($this->tool->execute(null, 'escaped', null, null, 100))['count']);
-        $this->assertSame(100, $this->untrusted($this->tool->execute(null, 'escaped', null, null, 101))['count']);
-        $this->assertSame(100, $this->untrusted($this->tool->execute(null, 'escaped', null, null, 100000))['count']);
+        self::assertSame(1, $this->untrusted($this->tool->execute(null, 'escaped', null, null, 1))['count']);
+        self::assertSame(99, $this->untrusted($this->tool->execute(null, 'escaped', null, null, 99))['count']);
+        self::assertSame(100, $this->untrusted($this->tool->execute(null, 'escaped', null, null, 100))['count']);
+        self::assertSame(100, $this->untrusted($this->tool->execute(null, 'escaped', null, null, 101))['count']);
+        self::assertSame(100, $this->untrusted($this->tool->execute(null, 'escaped', null, null, 100000))['count']);
     }
 
     public function testClampsNegativeLimitToOne(): void
     {
         $this->seedMany(5);
 
-        $this->assertSame(1, $this->untrusted($this->tool->execute(null, 'escaped', null, null, -10))['count']);
+        self::assertSame(1, $this->untrusted($this->tool->execute(null, 'escaped', null, null, -10))['count']);
     }
 
     public function testPaginatesFilteredMutantsFromTheMatchingPosition(): void
@@ -213,8 +213,8 @@ class EscapedToolTest extends TestCase
 
         $data = $this->untrusted($this->tool->execute(null, 'escaped', 'src/File1.php', null, 2, 1));
 
-        $this->assertSame(3, $data['total']);
-        $this->assertSame(['escaped:11', 'escaped:21'], array_column($data['mutants'], 'ref'));
+        self::assertSame(3, $data['total']);
+        self::assertSame(['escaped-11', 'escaped-21'], array_column($data['mutants'], 'id'));
     }
 
     public function testListsMutantsWithExactKeys(): void
@@ -223,8 +223,8 @@ class EscapedToolTest extends TestCase
 
         $data = $this->untrusted($this->tool->execute());
 
-        $this->assertSame(['runId', 'total', 'offset', 'count', 'mutants'], array_keys($data));
-        $this->assertSame(['ref', 'mutator', 'file', 'line', 'diff'], array_keys($data['mutants'][0]));
+        self::assertSame(['runId', 'total', 'offset', 'count', 'mutants'], array_keys($data));
+        self::assertSame(['id', 'mutator', 'file', 'line', 'diff'], array_keys($data['mutants'][0]));
     }
 
     public function testOffsetDefaultsToZero(): void
@@ -237,7 +237,7 @@ class EscapedToolTest extends TestCase
             $defaults[$p->getName()] = $p->getDefaultValue();
         }
 
-        $this->assertSame(0, $defaults['offset']);
+        self::assertSame(0, $defaults['offset']);
     }
 
     private function seedMany(int $count): string
@@ -245,7 +245,7 @@ class EscapedToolTest extends TestCase
         $mutants = [];
 
         for ($i = 0; $i < $count; ++$i) {
-            $mutants[] = new MutantResult('escaped', $i, 'Plus', 'src/File'.($i % 10).'.php', $i + 1, 'diff', '');
+            $mutants[] = new MutantResult('escaped', 'escaped-'.$i, 'Plus', 'src/File'.($i % 10).'.php', $i + 1, 'diff', '');
         }
 
         return $this->cache->store(['msi' => 0], $mutants, 1);
@@ -264,9 +264,9 @@ class EscapedToolTest extends TestCase
     private function untrusted(string $response): array
     {
         $decoded = ResponseEncoder::decode($response);
-        $this->assertIsArray($decoded);
-        $this->assertSame(ResponseEncoder::UNTRUSTED_NOTICE, $decoded['_security_notice']);
-        $this->assertIsArray($decoded['untrusted_data']);
+        self::assertIsArray($decoded);
+        self::assertSame(ResponseEncoder::UNTRUSTED_NOTICE, $decoded['_security_notice']);
+        self::assertIsArray($decoded['untrusted_data']);
 
         return $decoded['untrusted_data'];
     }
@@ -277,7 +277,7 @@ class EscapedToolTest extends TestCase
     private function decode(string $response): array
     {
         $decoded = ResponseEncoder::decode($response);
-        $this->assertIsArray($decoded);
+        self::assertIsArray($decoded);
 
         return $decoded;
     }

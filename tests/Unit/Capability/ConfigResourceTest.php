@@ -34,9 +34,9 @@ class ConfigResourceTest extends TestCase
     {
         $payload = $this->payload($this->resource());
 
-        $this->assertNull($payload['file']);
-        $this->assertSame([], $payload['config']);
-        $this->assertArrayNotHasKey('error', $payload);
+        self::assertNull($payload['file']);
+        self::assertSame([], $payload['config']);
+        self::assertArrayNotHasKey('error', $payload);
     }
 
     public function testReturnsDetectedFileAndDecodedConfig(): void
@@ -51,9 +51,9 @@ class ConfigResourceTest extends TestCase
 
         $payload = $this->payload($this->resource());
 
-        $this->assertSame('infection.json5', $payload['file']);
-        $this->assertSame(['source' => ['directories' => ['src']], 'minMsi' => 80], $payload['config']);
-        $this->assertArrayNotHasKey('error', $payload);
+        self::assertSame('infection.json5', $payload['file']);
+        self::assertSame(['source' => ['directories' => ['src']], 'minMsi' => 80], $payload['config']);
+        self::assertArrayNotHasKey('error', $payload);
     }
 
     public function testReportsParseErrorInsteadOfFailing(): void
@@ -62,11 +62,11 @@ class ConfigResourceTest extends TestCase
 
         $payload = $this->payload($this->resource());
 
-        $this->assertSame('infection.json', $payload['file']);
-        $this->assertArrayNotHasKey('config', $payload);
-        $this->assertStringStartsWith('Could not parse config: ', $payload['error']);
-        $this->assertGreaterThan(\strlen('Could not parse config: '), \strlen($payload['error']));
-        $this->assertSame(['file', 'error'], array_keys($payload));
+        self::assertSame('infection.json', $payload['file']);
+        self::assertArrayNotHasKey('config', $payload);
+        self::assertStringStartsWith('Could not parse config: ', $payload['error']);
+        self::assertGreaterThan(\strlen('Could not parse config: '), \strlen($payload['error']));
+        self::assertSame(['file', 'error'], array_keys($payload));
     }
 
     private function resource(): ConfigResource
@@ -80,7 +80,7 @@ class ConfigResourceTest extends TestCase
     private function payload(ConfigResource $resource): array
     {
         $decoded = ResponseEncoder::decode($resource->getConfiguration()['text']);
-        $this->assertIsArray($decoded);
+        self::assertIsArray($decoded);
 
         return $decoded;
     }

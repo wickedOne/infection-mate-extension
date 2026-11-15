@@ -18,7 +18,7 @@ Infection extension for Symfony Mate (`wickedone/infection-mate-extension`, name
 - `InfectionRunner` passes `--logger-json=<project root>/.infection.mate.<token>.log.json`, reads the file back and deletes it; leftovers older than a day are swept at the next run
 - `InfectionCapabilities` reads `infection run --help --format=json` once per request; `ArgumentResolver` validates the names and value shapes of `options` against it, so no Infection option is named in code except the ones the extension manages (`ArgumentResolver::MANAGED` and `logger-*`)
 - `paths` must be relative, exist and resolve inside the project root
-- mutants have no id in Infection's log: a `ref` is `bucket:index` and only valid within one `runId`
+- a mutant `id` is the hash Infection logs per entry (what `--id` takes, repeatable); `infection-mutant` looks it up within one `runId`, and re-running specific mutants goes through the generic `id` option, so no code names it
 - `ProcessExecutor` is the only place a process is started and `PathResolver` the only `realpath` caller; these two seams keep everything else free of real I/O
 - tools return `ResponseEncoder` strings; content from the inspected project (diffs, source, test output) goes through `encodeUntrusted`; failures are returned as `{error, hint[, output]}` payloads, never thrown
 

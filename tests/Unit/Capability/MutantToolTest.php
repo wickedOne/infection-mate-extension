@@ -50,45 +50,45 @@ class MutantToolTest extends TestCase
     {
         $runId = $this->seedRun();
 
-        $data = $this->untrusted($this->tool->execute('escaped:0'));
+        $data = $this->untrusted($this->tool->execute('escaped-0'));
 
-        $this->assertSame($runId, $data['runId']);
-        $this->assertSame('escaped:0', $data['ref']);
-        $this->assertSame('escaped', $data['bucket']);
-        $this->assertSame('GreaterThanOrEqualTo', $data['mutator']);
-        $this->assertSame('src/Calc.php', $data['file']);
-        $this->assertSame(12, $data['line']);
-        $this->assertStringContainsString('$value > $this->max', $data['diff']);
+        self::assertSame($runId, $data['runId']);
+        self::assertSame('escaped-0', $data['id']);
+        self::assertSame('escaped', $data['bucket']);
+        self::assertSame('GreaterThanOrEqualTo', $data['mutator']);
+        self::assertSame('src/Calc.php', $data['file']);
+        self::assertSame(12, $data['line']);
+        self::assertStringContainsString('$value > $this->max', $data['diff']);
     }
 
     public function testIncludesSurroundingSourceLines(): void
     {
         $this->seedRun();
 
-        $data = $this->untrusted($this->tool->execute('escaped:0'));
+        $data = $this->untrusted($this->tool->execute('escaped-0'));
 
-        $this->assertCount(13, $data['context']);
-        $this->assertSame('6: line 6', $data['context'][0]);
-        $this->assertSame('12: line 12', $data['context'][6]);
-        $this->assertSame('18: line 18', $data['context'][12]);
+        self::assertCount(13, $data['context']);
+        self::assertSame('6: line 6', $data['context'][0]);
+        self::assertSame('12: line 12', $data['context'][6]);
+        self::assertSame('18: line 18', $data['context'][12]);
     }
 
     public function testOmitsProcessOutputByDefault(): void
     {
         $this->seedRun();
 
-        $data = $this->untrusted($this->tool->execute('escaped:0'));
+        $data = $this->untrusted($this->tool->execute('escaped-0'));
 
-        $this->assertArrayNotHasKey('processOutput', $data);
+        self::assertArrayNotHasKey('processOutput', $data);
     }
 
     public function testIncludesProcessOutputWhenRequested(): void
     {
         $this->seedRun();
 
-        $data = $this->untrusted($this->tool->execute('escaped:0', null, true));
+        $data = $this->untrusted($this->tool->execute('escaped-0', null, true));
 
-        $this->assertStringContainsString('FAILURES!', $data['processOutput']);
+        self::assertStringContainsString('FAILURES!', $data['processOutput']);
     }
 
     public function testResolvesRefFromRequestedRun(): void
@@ -96,21 +96,21 @@ class MutantToolTest extends TestCase
         $this->seedRun();
         $runId = $this->seedRun();
 
-        $data = $this->untrusted($this->tool->execute('killed:1', $runId));
+        $data = $this->untrusted($this->tool->execute('killed-1', $runId));
 
-        $this->assertSame($runId, $data['runId']);
-        $this->assertSame('ReturnRemoveNonVoid', $data['mutator']);
+        self::assertSame($runId, $data['runId']);
+        self::assertSame('ReturnRemoveNonVoid', $data['mutator']);
     }
 
-    public function testReturnsErrorForUnknownRef(): void
+    public function testReturnsErrorForUnknownId(): void
     {
         $runId = $this->seedRun();
 
-        $data = $this->decode($this->tool->execute('escaped:9'));
+        $data = $this->decode($this->tool->execute('escaped-9'));
 
-        $this->assertSame(\sprintf('Mutant "escaped:9" not found in run %s.', $runId), $data['error']);
-        $this->assertStringContainsString('bucket:index', $data['hint']);
-        $this->assertArrayNotHasKey('untrusted_data', $data);
+        self::assertSame(\sprintf('Mutant "escaped-9" not found in run %s.', $runId), $data['error']);
+        self::assertStringContainsString('id from infection-escaped', $data['hint']);
+        self::assertArrayNotHasKey('untrusted_data', $data);
     }
 
     public function testReturnsErrorForUnknownRun(): void
@@ -121,17 +121,17 @@ class MutantToolTest extends TestCase
             $ids[] = $this->seedRun();
         }
 
-        $data = $this->decode($this->tool->execute('escaped:0', 'r000000000'));
+        $data = $this->decode($this->tool->execute('escaped-0', 'r000000000'));
 
-        $this->assertSame('Run not found.', $data['error']);
-        $this->assertSame('Call infection-run first. Recent run ids: '.implode(', ', \array_slice(array_reverse($ids), 0, 5)), $data['hint']);
+        self::assertSame('Run not found.', $data['error']);
+        self::assertSame('Call infection-run first. Recent run ids: '.implode(', ', \array_slice(array_reverse($ids), 0, 5)), $data['hint']);
     }
 
     public function testReturnsEmptyRecentRunsHintWhenNoRunExists(): void
     {
-        $data = $this->decode($this->tool->execute('escaped:0'));
+        $data = $this->decode($this->tool->execute('escaped-0'));
 
-        $this->assertSame('Call infection-run first. Recent run ids: ', $data['hint']);
+        self::assertSame('Call infection-run first. Recent run ids: ', $data['hint']);
     }
 
     private function seedRun(): string
@@ -147,7 +147,7 @@ class MutantToolTest extends TestCase
     private function decode(string $response): array
     {
         $decoded = ResponseEncoder::decode($response);
-        $this->assertIsArray($decoded);
+        self::assertIsArray($decoded);
 
         return $decoded;
     }
@@ -158,8 +158,8 @@ class MutantToolTest extends TestCase
     private function untrusted(string $response): array
     {
         $decoded = $this->decode($response);
-        $this->assertSame(ResponseEncoder::UNTRUSTED_NOTICE, $decoded['_security_notice']);
-        $this->assertIsArray($decoded['untrusted_data']);
+        self::assertSame(ResponseEncoder::UNTRUSTED_NOTICE, $decoded['_security_notice']);
+        self::assertIsArray($decoded['untrusted_data']);
 
         return $decoded['untrusted_data'];
     }

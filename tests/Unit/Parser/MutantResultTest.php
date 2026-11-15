@@ -15,16 +15,11 @@ use WickedOne\InfectionExtension\Parser\MutantResult;
 
 class MutantResultTest extends TestCase
 {
-    public function testRefCombinesBucketAndIndex(): void
-    {
-        $this->assertSame('escaped:3', $this->mutant()->ref());
-    }
-
     public function testToArrayExposesAllFields(): void
     {
-        $this->assertSame([
+        self::assertSame([
             'bucket' => 'escaped',
-            'index' => 3,
+            'id' => 'escaped-3',
             'mutator' => 'Increment',
             'file' => 'src/Calc.php',
             'line' => 42,
@@ -39,15 +34,14 @@ class MutantResultTest extends TestCase
 
         $restored = MutantResult::fromArray($original->jsonSerialize());
 
-        $this->assertSame($original->jsonSerialize(), $restored->jsonSerialize());
-        $this->assertSame('escaped:3', $restored->ref());
+        self::assertSame($original->jsonSerialize(), $restored->jsonSerialize());
     }
 
     public function testFromArrayCastsScalarTypes(): void
     {
         $mutant = MutantResult::fromArray([
             'bucket' => 'killed',
-            'index' => '7',
+            'id' => 7,
             'mutator' => 'Plus',
             'file' => 'src/A.php',
             'line' => '9',
@@ -55,9 +49,8 @@ class MutantResultTest extends TestCase
             'processOutput' => '',
         ]);
 
-        $this->assertSame(7, $mutant->index);
-        $this->assertSame(9, $mutant->line);
-        $this->assertSame('killed:7', $mutant->ref());
+        self::assertSame('7', $mutant->id);
+        self::assertSame(9, $mutant->line);
     }
 
     public function testFromArrayCastsEveryFieldToItsType(): void
@@ -67,7 +60,7 @@ class MutantResultTest extends TestCase
         try {
             $mutant = MutantResult::fromArray([
                 'bucket' => ['x'],
-                'index' => ['x'],
+                'id' => ['x'],
                 'mutator' => ['x'],
                 'file' => ['x'],
                 'line' => ['x'],
@@ -78,11 +71,11 @@ class MutantResultTest extends TestCase
             restore_error_handler();
         }
 
-        $this->assertSame(['Array', 1, 'Array', 'Array', 1, 'Array', 'Array'], array_values($mutant->jsonSerialize()));
+        self::assertSame(['Array', 'Array', 'Array', 'Array', 1, 'Array', 'Array'], array_values($mutant->jsonSerialize()));
     }
 
     private function mutant(): MutantResult
     {
-        return new MutantResult('escaped', 3, 'Increment', 'src/Calc.php', 42, "-a++\n+a--", 'FAILURES!');
+        return new MutantResult('escaped', 'escaped-3', 'Increment', 'src/Calc.php', 42, "-a++\n+a--", 'FAILURES!');
     }
 }

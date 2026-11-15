@@ -16,6 +16,7 @@
     },
     "escaped": [
         {
+            "id": "escaped-0",
             "mutator": {
                 "mutatorName": "GreaterThanOrEqualTo",
                 "originalSourceCode": "        if ($value >= $this->max) {\n            throw new \\RangeException('Too large');\n        }\n",
@@ -27,6 +28,7 @@
             "processOutput": "PHPUnit 10.5.0\n\nFAILURES!\nTests: 4, Assertions: 4, Failures: 0.\n"
         },
         {
+            "id": "escaped-1",
             "mutator": {
                 "mutatorName": "Increment",
                 "originalSourceCode": "        $count++;\n",
@@ -40,6 +42,7 @@
     ],
     "timeouted": [
         {
+            "id": "timeouted-0",
             "mutator": {
                 "mutatorName": "WhileLoopNegation",
                 "originalSourceCode": "        while ($pos < $length) {\n",
@@ -53,6 +56,7 @@
     ],
     "killed": [
         {
+            "id": "killed-0",
             "mutator": {
                 "mutatorName": "Plus",
                 "originalSourceCode": "        return $a + $b;\n",
@@ -64,6 +68,7 @@
             "processOutput": "FAILURES!\nTests: 4, Assertions: 4, Failures: 1.\n"
         },
         {
+            "id": "killed-1",
             "mutator": {
                 "mutatorName": "ReturnRemoveNonVoid",
                 "originalSourceCode": "        return $this->name;\n",
@@ -80,6 +85,7 @@
     "syntaxErrors": [],
     "uncovered": [
         {
+            "id": "uncovered-0",
             "mutator": {
                 "mutatorName": "TrueValue",
                 "originalSourceCode": "        return true;\n",

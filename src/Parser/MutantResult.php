@@ -15,22 +15,17 @@ namespace WickedOne\InfectionExtension\Parser;
  */
 class MutantResult implements \JsonSerializable
 {
-    public const array KEYS = ['bucket', 'index', 'mutator', 'file', 'line', 'diff', 'processOutput'];
+    public const array KEYS = ['bucket', 'id', 'mutator', 'file', 'line', 'diff', 'processOutput'];
 
     public function __construct(
         public readonly string $bucket,
-        public readonly int $index,
+        public readonly string $id,
         public readonly string $mutator,
         public readonly string $file,
         public readonly int $line,
         public readonly string $diff,
         public readonly string $processOutput,
     ) {
-    }
-
-    public function ref(): string
-    {
-        return $this->bucket.':'.$this->index;
     }
 
     /**
@@ -40,7 +35,7 @@ class MutantResult implements \JsonSerializable
     {
         return [
             'bucket' => $this->bucket,
-            'index' => $this->index,
+            'id' => $this->id,
             'mutator' => $this->mutator,
             'file' => $this->file,
             'line' => $this->line,
@@ -56,7 +51,7 @@ class MutantResult implements \JsonSerializable
     {
         return new self(
             (string) $data['bucket'],
-            (int) $data['index'],
+            (string) $data['id'],
             (string) $data['mutator'],
             (string) $data['file'],
             (int) $data['line'],

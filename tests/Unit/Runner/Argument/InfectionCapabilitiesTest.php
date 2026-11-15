@@ -36,7 +36,7 @@ class InfectionCapabilitiesTest extends TestCase
     {
         $capabilities = $this->capabilities(new RunResult(0, '{"definition":{"options":{"threads":{"accept_value":true,"is_value_required":true,"is_multiple":false},"filter":{"accept_value":1,"is_value_required":0,"is_multiple":"yes"},"debug":{},"odd":5},"arguments":{"paths":{}}}}', null));
 
-        $this->assertSame([
+        self::assertSame([
             'options' => [
                 'threads' => ['accept_value' => true, 'is_value_required' => true, 'is_multiple' => false],
                 'filter' => ['accept_value' => true, 'is_value_required' => false, 'is_multiple' => true],
@@ -54,9 +54,9 @@ class InfectionCapabilitiesTest extends TestCase
         (new InfectionCapabilities($this->root, new ConfigurationDiscovery($this->root), $executor))->definition();
 
         $call = $executor->lastCall();
-        $this->assertSame(['infection', 'run', '--help', '--format=json', '--no-ansi', '--no-interaction'], $call['command']);
-        $this->assertSame($this->root, $call['cwd']);
-        $this->assertSame(60, $call['timeout']);
+        self::assertSame(['infection', 'run', '--help', '--format=json', '--no-ansi', '--no-interaction'], $call['command']);
+        self::assertSame($this->root, $call['cwd']);
+        self::assertSame(60, $call['timeout']);
     }
 
     public function testRunsTheProjectsLocalBinaryWhenInstalled(): void
@@ -67,14 +67,14 @@ class InfectionCapabilitiesTest extends TestCase
 
         (new InfectionCapabilities($root, new ConfigurationDiscovery($root), $executor))->definition();
 
-        $this->assertSame([\PHP_BINARY, $root.'/vendor/bin/infection', 'run'], \array_slice($executor->lastCall()['command'], 0, 3));
+        self::assertSame([\PHP_BINARY, $root.'/vendor/bin/infection', 'run'], \array_slice($executor->lastCall()['command'], 0, 3));
     }
 
     public function testArgumentNamesThatPhpTurnsIntoIntegersAreStrings(): void
     {
         $capabilities = $this->capabilities(new RunResult(0, '{"definition":{"options":{},"arguments":{"8":{}}}}', null));
 
-        $this->assertSame(['8'], $capabilities->definition()['arguments'] ?? null);
+        self::assertSame(['8'], $capabilities->definition()['arguments'] ?? null);
     }
 
     public function testReadsTheDefinitionOnlyOnce(): void
@@ -85,7 +85,7 @@ class InfectionCapabilitiesTest extends TestCase
         $capabilities->definition();
         $capabilities->definition();
 
-        $this->assertCount(1, $executor->calls);
+        self::assertCount(1, $executor->calls);
     }
 
     /**
@@ -106,7 +106,7 @@ class InfectionCapabilitiesTest extends TestCase
     #[DataProvider('unreadableProvider')]
     public function testDefinitionIsNullWhenUnreadable(RunResult|\Throwable $outcome): void
     {
-        $this->assertNull($this->capabilities($outcome)->definition());
+        self::assertNull($this->capabilities($outcome)->definition());
     }
 
     private function capabilities(RunResult|\Throwable $outcome): InfectionCapabilities

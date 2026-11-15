@@ -38,19 +38,19 @@ class InfectionRunnerTest extends TestCase
     {
         $parameter = (new \ReflectionClass(InfectionRunner::class))->getConstructor()?->getParameters()[3];
 
-        $this->assertSame('defaultTimeout', $parameter?->getName());
-        $this->assertSame(1800, $parameter->getDefaultValue());
+        self::assertSame('defaultTimeout', $parameter?->getName());
+        self::assertSame(1800, $parameter->getDefaultValue());
     }
 
     public function testRunReturnsLogOutputAndExitCode(): void
     {
         $result = $this->runner()->run(['--exit=2']);
 
-        $this->assertSame(2, $result->exitCode);
-        $this->assertFalse($result->timedOut);
-        $this->assertSame('{"stats":{"msi":42}}', $result->log);
-        $this->assertStringContainsString('out-line', $result->output);
-        $this->assertStringContainsString('err-line', $result->output);
+        self::assertSame(2, $result->exitCode);
+        self::assertFalse($result->timedOut);
+        self::assertSame('{"stats":{"msi":42}}', $result->log);
+        self::assertStringContainsString('out-line', $result->output);
+        self::assertStringContainsString('err-line', $result->output);
     }
 
     public function testRunPassesFixedFlagsThenCallerArguments(): void
@@ -58,9 +58,9 @@ class InfectionRunnerTest extends TestCase
         $this->runner()->run(['--threads=2', '--filter=src/A.php']);
 
         $call = $this->executor->lastCall();
-        $this->assertSame('--logger-json='.$this->logPath(), $call['command'][1]);
-        $this->assertSame(['--no-progress', '--no-interaction', '--no-ansi', '--threads=2', '--filter=src/A.php'], \array_slice($call['command'], 2));
-        $this->assertSame($this->root, $call['cwd']);
+        self::assertSame('--logger-json='.$this->logPath(), $call['command'][1]);
+        self::assertSame(['--no-progress', '--no-interaction', '--no-ansi', '--threads=2', '--filter=src/A.php'], \array_slice($call['command'], 2));
+        self::assertSame($this->root, $call['cwd']);
     }
 
     public function testRunStartsTheProjectBinaryWhenInstalled(): void
@@ -70,7 +70,7 @@ class InfectionRunnerTest extends TestCase
 
         $this->runner()->run([]);
 
-        $this->assertSame([\PHP_BINARY, $this->root.'/vendor/bin/infection'], \array_slice($this->executor->lastCall()['command'], 0, 2));
+        self::assertSame([\PHP_BINARY, $this->root.'/vendor/bin/infection'], \array_slice($this->executor->lastCall()['command'], 0, 2));
     }
 
     public function testRunLeavesTheProjectConfigAloneAndRemovesTheLogAfterwards(): void
@@ -79,18 +79,18 @@ class InfectionRunnerTest extends TestCase
 
         $this->runner()->run([]);
 
-        $this->assertSame(['infection.json5'], $this->rootFiles());
-        $this->assertSame('{"source": {"directories": ["lib"]}}', file_get_contents($this->root.'/infection.json5'));
-        $this->assertFileDoesNotExist($this->logPath());
-        $this->assertMatchesRegularExpression('#^'.preg_quote($this->root, '#').'/\.infection\.mate\.[0-9a-f]{12}\.log\.json$#', $this->logPath());
+        self::assertSame(['infection.json5'], $this->rootFiles());
+        self::assertSame('{"source": {"directories": ["lib"]}}', file_get_contents($this->root.'/infection.json5'));
+        self::assertFileDoesNotExist($this->logPath());
+        self::assertMatchesRegularExpression('#^'.preg_quote($this->root, '#').'/\.infection\.mate\.[0-9a-f]{12}\.log\.json$#', $this->logPath());
     }
 
     public function testRunRemovesTheLogWhenInfectionFails(): void
     {
         $this->runner()->run(['--exit=1']);
 
-        $this->assertSame([], $this->rootFiles());
-        $this->assertFileDoesNotExist($this->logPath());
+        self::assertSame([], $this->rootFiles());
+        self::assertFileDoesNotExist($this->logPath());
     }
 
     public function testRunRemovesTheLogWhenTheExecutorThrows(): void
@@ -99,12 +99,12 @@ class InfectionRunnerTest extends TestCase
 
         try {
             $runner->run([]);
-            $this->fail('The exception should propagate.');
+            self::fail('The exception should propagate.');
         } catch (\RuntimeException $e) {
-            $this->assertSame('boom', $e->getMessage());
+            self::assertSame('boom', $e->getMessage());
         }
 
-        $this->assertSame([], $this->rootFiles());
+        self::assertSame([], $this->rootFiles());
     }
 
     public function testRunRemovesTemporaryFilesLeftByRunsThatDiedLongAgo(): void
@@ -116,7 +116,7 @@ class InfectionRunnerTest extends TestCase
 
         $this->runner()->run([]);
 
-        $this->assertSame([], $this->rootFiles());
+        self::assertSame([], $this->rootFiles());
     }
 
     public function testRunKeepsTemporaryFilesOfRunsStillInProgress(): void
@@ -128,33 +128,33 @@ class InfectionRunnerTest extends TestCase
 
         $this->runner()->run([]);
 
-        $this->assertSame(['.infection.mate.bbbbbbbbbbbb.json', 'infection.mate.json'], $this->rootFiles());
+        self::assertSame(['.infection.mate.bbbbbbbbbbbb.json', 'infection.mate.json'], $this->rootFiles());
     }
 
     public function testRunReturnsNullLogWhenInfectionWritesNone(): void
     {
         $result = $this->runner()->run(['--no-log']);
 
-        $this->assertNull($result->log);
-        $this->assertSame(0, $result->exitCode);
+        self::assertNull($result->log);
+        self::assertSame(0, $result->exitCode);
     }
 
     public function testRunReportsTimeout(): void
     {
         $result = $this->runner()->run(['--sleep'], 1);
 
-        $this->assertTrue($result->timedOut);
-        $this->assertSame(1, $result->exitCode);
-        $this->assertNull($result->log);
-        $this->assertStringContainsString('out-line', $result->output);
-        $this->assertSame([], $this->rootFiles());
+        self::assertTrue($result->timedOut);
+        self::assertSame(1, $result->exitCode);
+        self::assertNull($result->log);
+        self::assertStringContainsString('out-line', $result->output);
+        self::assertSame([], $this->rootFiles());
     }
 
     public function testRunUsesDefaultTimeoutWhenNoneIsGiven(): void
     {
         $this->runner()->run([]);
 
-        $this->assertSame(1800, $this->executor->lastCall()['timeout']);
+        self::assertSame(1800, $this->executor->lastCall()['timeout']);
     }
 
     public function testRunUsesConstructorTimeoutWhenNoneIsGiven(): void
@@ -163,20 +163,20 @@ class InfectionRunnerTest extends TestCase
 
         $runner->run([]);
 
-        $this->assertSame(5, $this->executor->lastCall()['timeout']);
+        self::assertSame(5, $this->executor->lastCall()['timeout']);
     }
 
     public function testDescribeRunsInfectionDescribeAndReturnsOutput(): void
     {
         $result = $this->runner()->describe('Plus');
 
-        $this->assertSame(0, $result->exitCode);
-        $this->assertNull($result->log);
-        $this->assertFalse($result->timedOut);
-        $this->assertSame("described:Plus\n", $result->output);
-        $this->assertSame(['infection', 'describe', '--no-ansi', '--no-interaction', 'Plus'], $this->executor->lastCall()['command']);
-        $this->assertSame($this->root, $this->executor->lastCall()['cwd']);
-        $this->assertSame(60, $this->executor->lastCall()['timeout']);
+        self::assertSame(0, $result->exitCode);
+        self::assertNull($result->log);
+        self::assertFalse($result->timedOut);
+        self::assertSame("described:Plus\n", $result->output);
+        self::assertSame(['infection', 'describe', '--no-ansi', '--no-interaction', 'Plus'], $this->executor->lastCall()['command']);
+        self::assertSame($this->root, $this->executor->lastCall()['cwd']);
+        self::assertSame(60, $this->executor->lastCall()['timeout']);
     }
 
     public function testDescribeStartsTheProjectBinaryWhenInstalled(): void
@@ -186,15 +186,15 @@ class InfectionRunnerTest extends TestCase
 
         $this->runner()->describe('Plus');
 
-        $this->assertSame([\PHP_BINARY, $this->root.'/vendor/bin/infection', 'describe'], \array_slice($this->executor->lastCall()['command'], 0, 3));
+        self::assertSame([\PHP_BINARY, $this->root.'/vendor/bin/infection', 'describe'], \array_slice($this->executor->lastCall()['command'], 0, 3));
     }
 
     public function testDescribeReturnsExitCodeAndErrorOutput(): void
     {
         $result = $this->runner()->describe('Unknown');
 
-        $this->assertSame(3, $result->exitCode);
-        $this->assertSame("no such mutator\n", $result->output);
+        self::assertSame(3, $result->exitCode);
+        self::assertSame("no such mutator\n", $result->output);
     }
 
     public function testRunUsesUniqueTokenInTemporaryLogPath(): void
@@ -204,7 +204,7 @@ class InfectionRunnerTest extends TestCase
         $first = $this->logPath();
         $runner->run([]);
 
-        $this->assertNotSame($first, $this->logPath());
+        self::assertNotSame($first, $this->logPath());
     }
 
     /**
@@ -251,7 +251,7 @@ class InfectionRunnerTest extends TestCase
 
     private function logPath(): string
     {
-        $this->assertNotNull($this->logPath);
+        self::assertNotNull($this->logPath);
 
         return $this->logPath;
     }

@@ -36,13 +36,13 @@ class RunTool
 
     /**
      * @param string[]|null                $paths   source files or directories (relative to the project root) to mutate; omit for the configured sources
-     * @param array<array-key, mixed>|null $options Infection run options by name without dashes, validated against the installed Infection; true switches a flag on, for example {"git-diff-lines": true, "git-diff-base": "main", "mutators": "@default", "only-covering-test-cases": true, "threads": 4}
+     * @param array<array-key, mixed>|null $options Infection run options by name without dashes, validated against the installed Infection; true switches a flag on, for example {"git-diff-lines": true, "git-diff-base": "main", "mutators": "@default", "only-covering-test-cases": true, "threads": 4, "id": ["<mutant id>"]}
      * @param int|null                     $timeout overall timeout in seconds (default 1800)
      */
     #[MateTool(
         name: 'infection-run',
         title: 'Run Infection',
-        description: 'Run mutation testing with Infection. Use when the user asks for mutation testing, the mutation score (MSI), or escaped mutants. Scope the run with paths or the git-diff-lines option, because full runs are slow. Options map to the installed Infection\'s run options; an unknown one is rejected with the list of valid names. Returns stats and a runId; follow up with infection-escaped, infection-mutant or infection-summary instead of re-running.'
+        description: 'Run mutation testing with Infection. Use when the user asks for mutation testing, the mutation score (MSI), or escaped mutants. Scope the run with paths or the git-diff-lines option, because full runs are slow. Options map to the installed Infection\'s run options; an unknown one is rejected with the list of valid names. Pass the id option (a list of mutant ids from infection-escaped) to re-run only those mutants after adding tests. Returns stats and a runId; follow up with infection-escaped, infection-mutant or infection-summary instead of re-running.'
     )]
     public function execute(?array $paths = null, ?array $options = null, ?int $timeout = null): string
     {

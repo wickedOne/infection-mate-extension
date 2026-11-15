@@ -17,20 +17,20 @@ class PathResolverTest extends TestCase
 {
     public function testResolvesExistingPathsToTheirCanonicalForm(): void
     {
-        $this->assertSame(__FILE__, (new PathResolver())->resolve(__DIR__.'/../Filesystem/./PathResolverTest.php'));
+        self::assertSame(__FILE__, (new PathResolver())->resolve(__DIR__.'/../Filesystem/./PathResolverTest.php'));
     }
 
     public function testReturnsNullForMissingPaths(): void
     {
-        $this->assertNull((new PathResolver())->resolve(__DIR__.'/missing'));
+        self::assertNull((new PathResolver())->resolve(__DIR__.'/missing'));
     }
 
     public function testAbsolutePathsStartWithASlash(): void
     {
         $resolver = new PathResolver();
 
-        $this->assertTrue($resolver->isAbsolute('/src/A.php'));
-        $this->assertFalse($resolver->isAbsolute('src/A.php'));
-        $this->assertFalse($resolver->isAbsolute('./src/A.php'));
+        self::assertTrue($resolver->isAbsolute('/src/A.php'));
+        self::assertFalse($resolver->isAbsolute('src/A.php'));
+        self::assertFalse($resolver->isAbsolute('./src/A.php'));
     }
 }

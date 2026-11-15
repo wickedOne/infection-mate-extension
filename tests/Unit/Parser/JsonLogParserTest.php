@@ -35,36 +35,36 @@ class JsonLogParserTest extends TestCase
     {
         $parsed = $this->parser->parse($this->fixture);
 
-        $this->assertSame(6, $parsed['stats']['totalMutantsCount']);
-        $this->assertSame(50, $parsed['stats']['msi']);
-        $this->assertSame(2, $parsed['stats']['escapedCount']);
+        self::assertSame(6, $parsed['stats']['totalMutantsCount']);
+        self::assertSame(50, $parsed['stats']['msi']);
+        self::assertSame(2, $parsed['stats']['escapedCount']);
     }
 
     public function testCollectsMutantsFromAllBucketsInBucketOrder(): void
     {
-        $refs = array_map(static fn (MutantResult $m): string => $m->ref(), $this->parser->parse($this->fixture)['mutants']);
+        $refs = array_map(static fn (MutantResult $m): string => $m->id, $this->parser->parse($this->fixture)['mutants']);
 
-        $this->assertSame(['escaped:0', 'escaped:1', 'timeouted:0', 'killed:0', 'killed:1', 'uncovered:0'], $refs);
+        self::assertSame(['escaped-0', 'escaped-1', 'timeouted-0', 'killed-0', 'killed-1', 'uncovered-0'], $refs);
     }
 
     public function testMapsEntryFieldsToMutantResult(): void
     {
         $mutant = $this->parser->parse($this->fixture)['mutants'][0];
 
-        $this->assertSame('escaped', $mutant->bucket);
-        $this->assertSame(0, $mutant->index);
-        $this->assertSame('GreaterThanOrEqualTo', $mutant->mutator);
-        $this->assertSame(12, $mutant->line);
-        $this->assertStringContainsString('-        if ($value >= $this->max) {', $mutant->diff);
-        $this->assertStringContainsString('PHPUnit 10.5.0', $mutant->processOutput);
+        self::assertSame('escaped', $mutant->bucket);
+        self::assertSame('escaped-0', $mutant->id);
+        self::assertSame('GreaterThanOrEqualTo', $mutant->mutator);
+        self::assertSame(12, $mutant->line);
+        self::assertStringContainsString('-        if ($value >= $this->max) {', $mutant->diff);
+        self::assertStringContainsString('PHPUnit 10.5.0', $mutant->processOutput);
     }
 
     public function testStripsProjectRootFromFilePaths(): void
     {
         $mutants = $this->parser->parse($this->fixture, '/project')['mutants'];
 
-        $this->assertSame('src/Calc.php', $mutants[0]->file);
-        $this->assertSame('src/Str/Slugger.php', $mutants[1]->file);
+        self::assertSame('src/Calc.php', $mutants[0]->file);
+        self::assertSame('src/Str/Slugger.php', $mutants[1]->file);
     }
 
     public function testStripsTheResolvedProjectRootWhenTheConfiguredOneIsASymlink(): void
@@ -73,22 +73,22 @@ class JsonLogParserTest extends TestCase
 
         $mutants = $parser->parse($this->fixture, '/link/project')['mutants'];
 
-        $this->assertSame('src/Calc.php', $mutants[0]->file);
-        $this->assertSame('src/Str/Slugger.php', $mutants[1]->file);
+        self::assertSame('src/Calc.php', $mutants[0]->file);
+        self::assertSame('src/Str/Slugger.php', $mutants[1]->file);
     }
 
     public function testStillStripsTheConfiguredProjectRootWhenItIsReportedAsIs(): void
     {
         $parser = new JsonLogParser(new FakePathResolver(['/project' => '/elsewhere']));
 
-        $this->assertSame('src/Calc.php', $parser->parse($this->fixture, '/project')['mutants'][0]->file);
+        self::assertSame('src/Calc.php', $parser->parse($this->fixture, '/project')['mutants'][0]->file);
     }
 
     public function testKeepsAbsoluteFilePathsWithoutProjectRoot(): void
     {
         $mutants = $this->parser->parse($this->fixture)['mutants'];
 
-        $this->assertSame('/project/src/Calc.php', $mutants[0]->file);
+        self::assertSame('/project/src/Calc.php', $mutants[0]->file);
     }
 
     public function testDoesNotStripPrefixThatIsNotAPathSegment(): void
@@ -102,7 +102,7 @@ class JsonLogParserTest extends TestCase
 
         $mutant = $this->parser->parse((string) $log, '/project')['mutants'][0];
 
-        $this->assertSame('/project-other/src/A.php', $mutant->file);
+        self::assertSame('/project-other/src/A.php', $mutant->file);
     }
 
     public function testFallsBackToDefaultsForMissingFields(): void
@@ -111,12 +111,12 @@ class JsonLogParserTest extends TestCase
 
         $mutant = $this->parser->parse((string) $log)['mutants'][0];
 
-        $this->assertSame('killed', $mutant->bucket);
-        $this->assertSame('unknown', $mutant->mutator);
-        $this->assertSame('', $mutant->file);
-        $this->assertSame(0, $mutant->line);
-        $this->assertSame('', $mutant->diff);
-        $this->assertSame('', $mutant->processOutput);
+        self::assertSame('killed', $mutant->bucket);
+        self::assertSame('unknown', $mutant->mutator);
+        self::assertSame('', $mutant->file);
+        self::assertSame(0, $mutant->line);
+        self::assertSame('', $mutant->diff);
+        self::assertSame('', $mutant->processOutput);
     }
 
     public function testIgnoresUnknownTopLevelKeys(): void
@@ -125,7 +125,7 @@ class JsonLogParserTest extends TestCase
 
         $parsed = $this->parser->parse((string) $log);
 
-        $this->assertSame([], $parsed['mutants']);
+        self::assertSame([], $parsed['mutants']);
     }
 
     public function testCastsEntryValuesToTheirTypes(): void
@@ -133,6 +133,7 @@ class JsonLogParserTest extends TestCase
         $log = json_encode([
             'stats' => [],
             'escaped' => [[
+                'id' => ['x'],
                 'mutator' => ['mutatorName' => ['x'], 'originalFilePath' => ['x'], 'originalStartLine' => ['x']],
                 'diff' => ['x'],
                 'processOutput' => ['x'],
@@ -147,17 +148,23 @@ class JsonLogParserTest extends TestCase
             restore_error_handler();
         }
 
-        $this->assertSame(['Array', 'Array', 1, 'Array', 'Array'], [$mutant->mutator, $mutant->file, $mutant->line, $mutant->diff, $mutant->processOutput]);
+        self::assertSame(['Array', 'Array', 'Array', 1, 'Array', 'Array'], [$mutant->id, $mutant->mutator, $mutant->file, $mutant->line, $mutant->diff, $mutant->processOutput]);
     }
 
-    public function testIndexesEntriesFromZeroPerBucketRegardlessOfLogKeys(): void
+    public function testReadsIdPerEntryRegardlessOfLogKeys(): void
     {
-        $entry = ['mutator' => ['mutatorName' => 'Plus']];
-        $log = json_encode(['stats' => [], 'escaped' => ['5' => $entry, '9' => $entry]], \JSON_THROW_ON_ERROR);
+        $log = json_encode(['stats' => [], 'escaped' => ['5' => ['id' => 'abc', 'mutator' => ['mutatorName' => 'Plus']], '9' => ['id' => 'def']]], \JSON_THROW_ON_ERROR);
 
-        $refs = array_map(static fn (MutantResult $m): string => $m->ref(), $this->parser->parse($log)['mutants']);
+        $ids = array_map(static fn (MutantResult $m): string => $m->id, $this->parser->parse($log)['mutants']);
 
-        $this->assertSame(['escaped:0', 'escaped:1'], $refs);
+        self::assertSame(['abc', 'def'], $ids);
+    }
+
+    public function testEntryWithoutIdGetsAnEmptyId(): void
+    {
+        $log = json_encode(['stats' => [], 'escaped' => [['mutator' => ['mutatorName' => 'Plus']]]], \JSON_THROW_ON_ERROR);
+
+        self::assertSame('', $this->parser->parse($log)['mutants'][0]->id);
     }
 
     public function testAcceptsLogsNestedUpToFiveHundredAndTwelveLevels(): void
@@ -166,7 +173,7 @@ class JsonLogParserTest extends TestCase
 
         $parsed = $this->parser->parse('{"stats":{},"extra":'.$nested.'}');
 
-        $this->assertSame([], $parsed['mutants']);
+        self::assertSame([], $parsed['mutants']);
     }
 
     public function testRejectsLogsNestedBeyondFiveHundredAndTwelveLevels(): void

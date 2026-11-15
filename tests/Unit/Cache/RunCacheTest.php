@@ -34,16 +34,16 @@ class RunCacheTest extends TestCase
     {
         $id = (new RunCache($this->directory))->store(['msi' => 50], $this->mutants(), 1);
 
-        $this->assertMatchesRegularExpression('/^r[0-9a-f]{13}$/', $id);
+        self::assertMatchesRegularExpression('/^r[0-9a-f]{13}$/', $id);
     }
 
     public function testStoreCreatesMissingDirectory(): void
     {
-        $this->assertDirectoryDoesNotExist($this->directory);
+        self::assertDirectoryDoesNotExist($this->directory);
 
         (new RunCache($this->directory))->store([], [], 0);
 
-        $this->assertDirectoryExists($this->directory);
+        self::assertDirectoryExists($this->directory);
     }
 
     public function testStoreThrowsWhenDirectoryCannotBeCreated(): void
@@ -75,12 +75,12 @@ class RunCacheTest extends TestCase
         $id = $cache->store($stats, $this->mutants(), 2);
         $run = $cache->load($id);
 
-        $this->assertNotNull($run);
-        $this->assertSame($id, $run['id']);
-        $this->assertSame($stats, $run['stats']);
-        $this->assertSame(2, $run['exitCode']);
-        $this->assertContainsOnlyInstancesOf(MutantResult::class, $run['mutants']);
-        $this->assertSame(
+        self::assertNotNull($run);
+        self::assertSame($id, $run['id']);
+        self::assertSame($stats, $run['stats']);
+        self::assertSame(2, $run['exitCode']);
+        self::assertContainsOnlyInstancesOf(MutantResult::class, $run['mutants']);
+        self::assertSame(
             array_map(static fn (MutantResult $m): array => $m->jsonSerialize(), $this->mutants()),
             array_map(static fn (MutantResult $m): array => $m->jsonSerialize(), $run['mutants']),
         );
@@ -94,14 +94,14 @@ class RunCacheTest extends TestCase
 
         $run = $cache->load(null);
 
-        $this->assertNotNull($run);
-        $this->assertSame($newer, $run['id']);
-        $this->assertSame(['msi' => 90], $run['stats']);
+        self::assertNotNull($run);
+        self::assertSame($newer, $run['id']);
+        self::assertSame(['msi' => 90], $run['stats']);
     }
 
     public function testLoadWithoutIdReturnsNullWhenCacheIsEmpty(): void
     {
-        $this->assertNull((new RunCache($this->directory))->load(null));
+        self::assertNull((new RunCache($this->directory))->load(null));
     }
 
     public function testLoadReturnsNullForUnknownId(): void
@@ -109,7 +109,7 @@ class RunCacheTest extends TestCase
         $cache = new RunCache($this->directory);
         $cache->store([], [], 0);
 
-        $this->assertNull($cache->load('r0000000000000'));
+        self::assertNull($cache->load('r0000000000000'));
     }
 
     /**
@@ -130,7 +130,7 @@ class RunCacheTest extends TestCase
         $cache = new RunCache($this->directory);
         $cache->store([], [], 0);
 
-        $this->assertNull($cache->load($id));
+        self::assertNull($cache->load($id));
     }
 
     public function testIdsAreListedNewestFirst(): void
@@ -140,12 +140,12 @@ class RunCacheTest extends TestCase
         $second = $cache->store([], [], 0);
         $third = $cache->store([], [], 0);
 
-        $this->assertSame([$third, $second, $first], $cache->ids());
+        self::assertSame([$third, $second, $first], $cache->ids());
     }
 
     public function testIdsIsEmptyWhenDirectoryDoesNotExist(): void
     {
-        $this->assertSame([], (new RunCache($this->directory))->ids());
+        self::assertSame([], (new RunCache($this->directory))->ids());
     }
 
     public function testPruneKeepsOnlyTheNewestRuns(): void
@@ -157,10 +157,10 @@ class RunCacheTest extends TestCase
         // the third store prunes the oldest run
         $third = $cache->store([], [], 0);
 
-        $this->assertSame([$third, $second], $cache->ids());
-        $this->assertNull($cache->load($first));
-        $this->assertNotNull($cache->load($second));
-        $this->assertNotNull($cache->load($third));
+        self::assertSame([$third, $second], $cache->ids());
+        self::assertNull($cache->load($first));
+        self::assertNotNull($cache->load($second));
+        self::assertNotNull($cache->load($third));
     }
 
     public function testDefaultKeepRetainsTenRuns(): void
@@ -170,7 +170,7 @@ class RunCacheTest extends TestCase
             $cache->store([], [], 0);
         }
 
-        $this->assertCount(10, $cache->ids());
+        self::assertCount(10, $cache->ids());
     }
 
     public function testStoreCreatesDirectoryWithGroupWritableMode(): void
@@ -183,7 +183,7 @@ class RunCacheTest extends TestCase
             vfsStream::umask($previous);
         }
 
-        $this->assertSame(0o775, fileperms($this->directory) & 0o777);
+        self::assertSame(0o775, fileperms($this->directory) & 0o777);
     }
 
     public function testStoreIdStartsWithCurrentMillisecondTimestamp(): void
@@ -203,10 +203,10 @@ class RunCacheTest extends TestCase
             restore_error_handler();
         }
 
-        $this->assertSame([], $deprecations);
-        $this->assertSame(14, \strlen($id));
-        $this->assertGreaterThanOrEqual($before, hexdec(substr($id, 1, 11)));
-        $this->assertLessThanOrEqual($after, hexdec(substr($id, 1, 11)));
+        self::assertSame([], $deprecations);
+        self::assertSame(14, \strlen($id));
+        self::assertGreaterThanOrEqual($before, hexdec(substr($id, 1, 11)));
+        self::assertLessThanOrEqual($after, hexdec(substr($id, 1, 11)));
     }
 
     public function testStoreSortsAfterNewestExistingRunEvenWhenClockIsBehind(): void
@@ -218,8 +218,8 @@ class RunCacheTest extends TestCase
 
         $id = (new RunCache($this->directory))->store([], [], 0);
 
-        $this->assertSame($future + 1, (int) hexdec(substr($id, 1, 11)));
-        $this->assertSame($id, $this->ids($this->directory)[0]);
+        self::assertSame($future + 1, (int) hexdec(substr($id, 1, 11)));
+        self::assertSame($id, $this->ids($this->directory)[0]);
     }
 
     public function testLoadRejectsMalformedIdsEvenWhenTheFileExists(): void
@@ -227,11 +227,11 @@ class RunCacheTest extends TestCase
         mkdir($this->directory, 0o775, true);
         foreach (['xr0123456789abc', 'r0123456789abcd'] as $id) {
             file_put_contents($this->directory.'/'.$id.'.json', '{"stats":{},"mutants":[]}');
-            $this->assertNull((new RunCache($this->directory))->load($id), $id);
+            self::assertNull((new RunCache($this->directory))->load($id), $id);
         }
 
         file_put_contents($this->directory.'/r0123456789abc.json', '{"stats":{},"mutants":[]}');
-        $this->assertNotNull((new RunCache($this->directory))->load('r0123456789abc'));
+        self::assertNotNull((new RunCache($this->directory))->load('r0123456789abc'));
     }
 
     /**
@@ -248,7 +248,7 @@ class RunCacheTest extends TestCase
         yield 'mutants not an array' => ['{"stats":{},"mutants":5}'];
         yield 'mutant not an array' => ['{"stats":{},"mutants":[5]}'];
         yield 'mutant without keys' => ['{"stats":{},"mutants":[{}]}'];
-        yield 'mutant missing the process output' => ['{"stats":{},"mutants":[{"bucket":"escaped","index":0,"mutator":"Plus","file":"a.php","line":1,"diff":""}]}'];
+        yield 'mutant missing the process output' => ['{"stats":{},"mutants":[{"bucket":"escaped","id":"escaped-0","mutator":"Plus","file":"a.php","line":1,"diff":""}]}'];
     }
 
     #[DataProvider('corruptRunProvider')]
@@ -257,7 +257,7 @@ class RunCacheTest extends TestCase
         mkdir($this->directory, 0o775, true);
         file_put_contents($this->directory.'/r0000000000001.json', $contents);
 
-        $this->assertNull((new RunCache($this->directory))->load('r0000000000001'));
+        self::assertNull((new RunCache($this->directory))->load('r0000000000001'));
     }
 
     public function testLoadDefaultsExitCodeToOneAndCastsItToInt(): void
@@ -267,8 +267,8 @@ class RunCacheTest extends TestCase
         file_put_contents($this->directory.'/r0000000000002.json', '{"stats":{},"mutants":[],"exitCode":"2"}');
         $cache = new RunCache($this->directory);
 
-        $this->assertSame(1, $cache->load('r0000000000001')['exitCode'] ?? null);
-        $this->assertSame(2, $cache->load('r0000000000002')['exitCode'] ?? null);
+        self::assertSame(1, $cache->load('r0000000000001')['exitCode'] ?? null);
+        self::assertSame(2, $cache->load('r0000000000002')['exitCode'] ?? null);
     }
 
     public function testLoadRejectsIdWithTrailingNewlineEvenWhenSuchFileExists(): void
@@ -277,7 +277,7 @@ class RunCacheTest extends TestCase
         $id = $cache->store(['msi' => 1], [], 0);
         copy($this->directory.'/'.$id.'.json', $this->directory.'/'.$id."\n.json");
 
-        $this->assertNull($cache->load($id."\n"));
+        self::assertNull($cache->load($id."\n"));
     }
 
     /**
@@ -286,8 +286,8 @@ class RunCacheTest extends TestCase
     private function mutants(): array
     {
         return [
-            new MutantResult('escaped', 0, 'Plus', 'src/Calc.php', 8, '-a+b', 'FAILURES!'),
-            new MutantResult('killed', 0, 'Increment', 'src/Str.php', 3, '-a++', ''),
+            new MutantResult('escaped', 'escaped-0', 'Plus', 'src/Calc.php', 8, '-a+b', 'FAILURES!'),
+            new MutantResult('killed', 'killed-0', 'Increment', 'src/Str.php', 3, '-a++', ''),
         ];
     }
 

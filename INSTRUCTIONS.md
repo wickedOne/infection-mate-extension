@@ -11,7 +11,7 @@ Mutation testing with Infection. Use these tools instead of running `vendor/bin/
 | What does this mutator do                              | `infection-describe-mutator`                      |
 | How is Infection configured                            | `infection://config`                              |
 
-Start with `infection-run`, keep its `runId`, and drill down with the other tools instead of re-running. The `mate-infection-mutation-testing` skill has the workflow, how to read each bucket, equivalent-mutant handling and the failure paths.
+Start with `infection-run`, keep its `runId`, and drill down with the other tools instead of re-running. To re-check specific mutants after writing tests, run `infection-run` again with the `id` option set to a list of mutant ids from `infection-escaped`. The `mate-infection-mutation-testing` skill has the workflow, how to read each bucket, equivalent-mutant handling and the failure paths.
 
 ## Resources
 

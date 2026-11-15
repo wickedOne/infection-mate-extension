@@ -30,7 +30,7 @@ return (new PhpCsFixer\Config())
         'header_comment' => [
             'header' => $header,
         ],
-        'php_unit_test_case_static_method_calls' => ['call_type' => 'this'],
+        'php_unit_test_case_static_method_calls' => ['call_type' => 'self'],
         'ordered_class_elements' => [
             'order' => [
                 'use_trait',
