@@ -27,12 +27,12 @@
   },
   "require-dev": {
     "friendsofphp/php-cs-fixer": "^3.95.30",
-    "infection/infection": "dev-master",
+    "infection/infection": ">=0.35.11",
     "mikey179/vfsstream": "^1.6.12",
     "phpstan/phpstan": "^2.3.5",
-    "phpstan/phpstan-phpunit": "^2.1.1",
-    "phpunit/phpunit": "^10.0 || ^11.0 || ^12.0 || ^13.4.5",
-    "rector/rector": "^2.8.4"
+    "phpstan/phpstan-phpunit": "^2.1.2",
+    "phpunit/phpunit": "^10.0 || ^11.0 || ^12.0 || ^13.4.7",
+    "rector/rector": "^2.8.5"
   },
   "suggest": {
     "helgesverre/toon": "Makes tool responses use the token-efficient TOON format instead of JSON (use ^3.2.1)",
