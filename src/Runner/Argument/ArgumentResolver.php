@@ -18,6 +18,11 @@ use WickedOne\InfectionExtension\Runner\Exception\InvalidArgumentException;
  */
 class ArgumentResolver
 {
+    private const string ID_OPTION = 'id';
+
+    // raw arguments for the test framework, a leading dash is the point of them (--filter=Foo)
+    private const array RAW_VALUE_OPTIONS = ['test-framework-extra-args'];
+
     private const array MANAGED = ['configuration', 'no-progress', 'force-progress', 'help', 'version', 'quiet', 'silent', 'verbose', 'ansi', 'no-ansi', 'no-interaction'];
 
     public function __construct(
@@ -31,11 +36,9 @@ class ArgumentResolver
      * @param string[]|null                $paths
      * @param array<array-key, mixed>|null $options infection run options by name without dashes
      *
-     * @return list<string>
-     *
      * @throws InvalidArgumentException
      */
-    public function resolve(?array $paths, ?array $options, ?int $timeout): array
+    public function resolve(?array $paths, ?array $options, ?int $timeout): ResolvedArguments
     {
         if (null !== $timeout && $timeout < 1) {
             throw new InvalidArgumentException('Invalid timeout.', 'Pass a number of seconds of at least 1, or omit it for the default.');
@@ -53,14 +56,18 @@ class ArgumentResolver
             throw new InvalidArgumentException('The installed Infection does not accept paths.', 'Update infection/infection, or leave paths out.');
         }
 
-        return [...$this->options($options ?? [], $definition), ...$files];
+        $this->capabilities->assertWritesJsonLog();
+
+        $flags = $this->options($options ?? [], $definition);
+
+        return new ResolvedArguments([...array_merge(...array_values($flags)), ...$files], [] !== ($flags[self::ID_OPTION] ?? []));
     }
 
     /**
      * @param array<array-key, mixed>                                                                                                            $options
      * @param array{options: array<string, array{accept_value: bool, is_value_required: bool, is_multiple: bool}>, arguments: list<string>}|null $definition
      *
-     * @return list<string>
+     * @return array<string, list<string>> the flags per option name
      */
     private function options(array $options, ?array $definition): array
     {
@@ -73,17 +80,17 @@ class ArgumentResolver
         }
 
         $known = array_filter($definition['options'], fn (string $name): bool => !$this->managed($name), \ARRAY_FILTER_USE_KEY);
-        $arguments = [];
+        $flags = [];
 
         foreach ($options as $name => $value) {
             if (!isset($known[$name])) {
                 throw new InvalidArgumentException(\sprintf('The installed Infection does not support the option "%s".', $name), 'Use one of: '.implode(', ', array_keys($known)).'.');
             }
 
-            array_push($arguments, ...$this->option($name, $value, $known[$name]));
+            $flags[$name] = $this->option($name, $value, $known[$name]);
         }
 
-        return $arguments;
+        return $flags;
     }
 
     /**
@@ -111,6 +118,10 @@ class ArgumentResolver
 
         $values = \is_array($value) ? $value : [$value];
 
+        if ([] === $values) {
+            throw new InvalidArgumentException(\sprintf('The option "%s" got an empty list.', $name), 'Pass at least one value, or leave the option out.');
+        }
+
         if (\is_array($value) && !$shape['is_multiple']) {
             throw new InvalidArgumentException(\sprintf('The option "%s" takes a single value.', $name), 'Pass one string or number.');
         }
@@ -122,7 +133,7 @@ class ArgumentResolver
     {
         $value = \is_int($value) || \is_float($value) ? (string) $value : $value;
 
-        if (!\is_string($value) || '' === $value || str_starts_with($value, '-') || preg_match('/[\x00-\x1f]/', $value)) {
+        if (!\is_string($value) || '' === $value || (str_starts_with($value, '-') && !\in_array($name, self::RAW_VALUE_OPTIONS, true)) || preg_match('/[\x00-\x1f]/', $value)) {
             throw new InvalidArgumentException(\sprintf('Invalid value for the option "%s".', $name), 'Pass a non-empty string or number that does not start with a dash.');
         }
 

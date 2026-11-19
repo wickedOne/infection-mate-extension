@@ -98,11 +98,27 @@ class SummaryToolTest extends TestCase
         self::assertArrayNotHasKey('untrusted_data', $decoded);
     }
 
-    private function seedRun(): string
+    public function testMarksAPartialRun(): void
+    {
+        $data = $this->decode($this->tool->execute($this->seedRun(3)));
+
+        self::assertIsArray($data['untrusted_data']);
+        self::assertStringStartsWith('Limited to the mutants matching the given ids (3)', $data['untrusted_data']['partial']);
+    }
+
+    public function testDoesNotMarkARegularRun(): void
+    {
+        $data = $this->decode($this->tool->execute($this->seedRun()));
+
+        self::assertIsArray($data['untrusted_data']);
+        self::assertArrayNotHasKey('partial', $data['untrusted_data']);
+    }
+
+    private function seedRun(?int $selected = null): string
     {
         $parsed = (new JsonLogParser(new FakePathResolver()))->parse((string) file_get_contents(__DIR__.'/../../Fixtures/infection-log.json'), '/project');
 
-        return $this->cache->store($parsed['stats'], $parsed['mutants'], 2);
+        return $this->cache->store($parsed['stats'], $parsed['mutants'], 2, $selected);
     }
 
     /**

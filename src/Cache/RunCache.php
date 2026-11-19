@@ -10,6 +10,7 @@
 
 namespace WickedOne\InfectionExtension\Cache;
 
+use WickedOne\InfectionExtension\Enum\BucketEnum;
 use WickedOne\InfectionExtension\Parser\MutantResult;
 
 /**
@@ -17,6 +18,9 @@ use WickedOne\InfectionExtension\Parser\MutantResult;
  */
 class RunCache
 {
+    // marks the id of a run limited to selected mutants
+    private const string PARTIAL = 'p';
+
     public function __construct(
         private readonly string $directory,
         private readonly int $keep = 10,
@@ -26,8 +30,9 @@ class RunCache
     /**
      * @param array<string, int|float> $stats
      * @param list<MutantResult>       $mutants
+     * @param int|null                 $selected number of mutants in a run limited to selected mutant ids (0 when none matched), null for a regular run
      */
-    public function store(array $stats, array $mutants, int $exitCode): string
+    public function store(array $stats, array $mutants, int $exitCode, ?int $selected = null): string
     {
         if (!is_dir($this->directory)) {
             @mkdir($this->directory, 0o775, true);
@@ -47,11 +52,12 @@ class RunCache
             $millis = max($millis, \intval(substr($latest, 1, 11), 16) + 1);
         }
 
-        $id = 'r'.\sprintf('%011s', dechex($millis)).bin2hex(random_bytes(1));
+        $id = 'r'.\sprintf('%011s', dechex($millis)).bin2hex(random_bytes(1)).(null === $selected ? '' : self::PARTIAL);
         $written = @file_put_contents($this->path($id), json_encode([
             'stats' => $stats,
             'exitCode' => $exitCode,
             'mutants' => $mutants,
+            'selected' => $selected,
         ], \JSON_THROW_ON_ERROR));
 
         if (false === $written) {
@@ -64,13 +70,13 @@ class RunCache
     }
 
     /**
-     * @return array{id: string, stats: array<string, int|float>, exitCode: int, mutants: list<MutantResult>}|null
+     * @return array{id: string, stats: array<string, int|float>, exitCode: int, selected: int|null, mutants: list<MutantResult>}|null
      */
     public function load(?string $id): ?array
     {
         $id ??= $this->latestId();
 
-        if (null === $id || !preg_match('/^r[0-9a-f]{13}$/D', $id) || !is_file($this->path($id))) {
+        if (null === $id || !preg_match('/^r[0-9a-f]{13}p?$/D', $id) || !is_file($this->path($id))) {
             return null;
         }
 
@@ -87,7 +93,7 @@ class RunCache
         }
 
         foreach ($data['mutants'] as $entry) {
-            if (!\is_array($entry) || [] !== array_diff(MutantResult::KEYS, array_keys($entry))) {
+            if (!\is_array($entry) || [] !== array_diff(MutantResult::KEYS, array_keys($entry)) || !\is_string($entry['bucket']) || null === BucketEnum::tryFrom($entry['bucket'])) {
                 return null;
             }
         }
@@ -96,6 +102,7 @@ class RunCache
             'id' => $id,
             'stats' => $data['stats'],
             'exitCode' => (int) ($data['exitCode'] ?? 1),
+            'selected' => \is_int($data['selected'] ?? null) ? $data['selected'] : null,
             'mutants' => array_values(array_map(MutantResult::fromArray(...), $data['mutants'])),
         ];
     }
@@ -112,9 +119,25 @@ class RunCache
         return $ids;
     }
 
+    /**
+     * partial runs only stand in when there is no regular one, as their stats do not cover the project.
+     */
     private function latestId(): ?string
     {
-        return $this->ids()[0] ?? null;
+        $ids = $this->ids();
+
+        foreach ($ids as $id) {
+            if (!$this->partial($id)) {
+                return $id;
+            }
+        }
+
+        return $ids[0] ?? null;
+    }
+
+    private function partial(string $id): bool
+    {
+        return str_ends_with($id, self::PARTIAL);
     }
 
     private function path(string $id): string
@@ -124,7 +147,12 @@ class RunCache
 
     private function prune(): void
     {
-        foreach (\array_slice($this->ids(), $this->keep) as $old) {
+        // partial runs have their own window, so re-running a few mutants never pushes out the full runs
+        $ids = $this->ids();
+        $regular = array_filter($ids, fn (string $id): bool => !$this->partial($id));
+        $partial = array_filter($ids, $this->partial(...));
+
+        foreach ([...\array_slice($regular, $this->keep), ...\array_slice($partial, $this->keep)] as $old) {
             @unlink($this->path($old));
         }
     }

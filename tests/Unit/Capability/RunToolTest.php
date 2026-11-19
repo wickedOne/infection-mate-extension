@@ -14,6 +14,7 @@ use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Symfony\AI\Mate\Encoding\ResponseEncoder;
+use WickedOne\InfectionExtension\Cache\OutputStore;
 use WickedOne\InfectionExtension\Cache\RunCache;
 use WickedOne\InfectionExtension\Capability\RunTool;
 use WickedOne\InfectionExtension\Discovery\ConfigurationDiscovery;
@@ -60,6 +61,9 @@ class RunToolTest extends TestCase
             'configuration' => ['accept_value' => true, 'is_value_required' => true, 'is_multiple' => false],
             'logger-text' => ['accept_value' => true, 'is_value_required' => true, 'is_multiple' => false],
             'no-progress' => ['accept_value' => false, 'is_value_required' => false, 'is_multiple' => false],
+            'logger-json' => ['accept_value' => true, 'is_value_required' => true, 'is_multiple' => false],
+            'id' => ['accept_value' => true, 'is_value_required' => true, 'is_multiple' => true],
+            'test-framework-extra-args' => ['accept_value' => true, 'is_value_required' => true, 'is_multiple' => false],
         ];
 
         $this->buildTool();
@@ -169,12 +173,121 @@ class RunToolTest extends TestCase
         self::assertArrayHasKey('runId', $this->untrusted($this->tool->execute(['src'])));
     }
 
+    public function testRejectsAnInfectionWithoutTheJsonLogger(): void
+    {
+        unset($this->definition['logger-json']);
+        $this->buildTool();
+
+        $data = $this->error($this->tool->execute());
+
+        self::assertSame('The installed Infection does not support the option "logger-json", which the extension needs to read the results.', $data['error']);
+        self::assertSame('Update infection/infection to 0.35.11 or newer.', $data['hint']);
+        self::assertCount(1, $this->executor->calls);
+    }
+
+    public function testRepeatsTheIdOptionPerMutantId(): void
+    {
+        $this->tool->execute(['src'], ['threads' => 2, 'id' => ['abc', 'def']]);
+
+        self::assertSame(['--threads=2', '--id=abc', '--id=def', 'src'], $this->extraArguments());
+    }
+
+    public function testRejectsAnEmptyListForARepeatableOption(): void
+    {
+        $data = $this->error($this->tool->execute(options: ['id' => []]));
+
+        self::assertSame('The option "id" got an empty list.', $data['error']);
+        self::assertSame('Pass at least one value, or leave the option out.', $data['hint']);
+        self::assertCount(1, $this->executor->calls);
+    }
+
+    public function testMarksARunOfSelectedMutantsAsPartial(): void
+    {
+        $data = $this->untrusted($this->tool->execute(options: ['id' => ['abc', 'def']]));
+
+        // the fixture log holds 6 mutants, whatever ids were asked for
+        self::assertSame('Limited to the mutants matching the given ids (6): the stats cover just those, not the project. Run the wider scope again for the real score.', $data['partial']);
+        $run = $this->cache->load($data['runId']);
+        self::assertNotNull($run);
+        self::assertSame(6, $run['selected']);
+    }
+
+    public function testCountsTheMutantsInTheLogNotTheIdsGiven(): void
+    {
+        $this->configureFake(['mode' => 'nomatch', 'exit' => 1]);
+
+        $data = $this->untrusted($this->tool->execute(options: ['id' => ['stale', 'stale']]));
+
+        self::assertStringStartsWith('None of the given mutant ids matched a mutant', $data['partial']);
+        $run = $this->cache->load($data['runId']);
+        self::assertNotNull($run);
+        self::assertSame(0, $run['selected']);
+    }
+
+    public function testMarksARunSelectedThroughASingleIdAsPartial(): void
+    {
+        $data = $this->untrusted($this->tool->execute(options: ['id' => 'abc']));
+
+        self::assertStringStartsWith('Limited to the mutants matching the given ids', $data['partial']);
+    }
+
+    public function testDoesNotMarkARunAsPartialWhenTheIdOptionIsSwitchedOff(): void
+    {
+        $data = $this->untrusted($this->tool->execute(options: ['id' => false, 'threads' => 2]));
+
+        self::assertArrayNotHasKey('partial', $data);
+        self::assertSame(['--threads=2'], $this->extraArguments());
+    }
+
+    public function testDoesNotMarkARunWithOtherOptionsOnlyAsPartial(): void
+    {
+        $data = $this->untrusted($this->tool->execute(['src'], ['threads' => 2]));
+
+        self::assertArrayNotHasKey('partial', $data);
+    }
+
+    public function testDoesNotMarkARegularRunAsPartial(): void
+    {
+        $data = $this->untrusted($this->tool->execute());
+
+        self::assertArrayNotHasKey('partial', $data);
+        $run = $this->cache->load($data['runId']);
+        self::assertNotNull($run);
+        self::assertNull($run['selected']);
+    }
+
+    public function testPassesRawTestFrameworkArgumentsThatStartWithADash(): void
+    {
+        $this->tool->execute(options: ['test-framework-extra-args' => '--filter=Foo|Bar']);
+
+        self::assertSame(['--test-framework-extra-args=--filter=Foo|Bar'], $this->extraArguments());
+    }
+
+    /**
+     * @return iterable<string, array{mixed}>
+     */
+    public static function invalidRawValueProvider(): iterable
+    {
+        yield 'empty' => [''];
+        yield 'newline' => ["--filter=Foo\n--bar"];
+        yield 'nul byte' => ["--filter=Foo\0"];
+        yield 'array' => [['--filter=Foo']];
+    }
+
+    #[DataProvider('invalidRawValueProvider')]
+    public function testStillRejectsUnusableRawTestFrameworkArguments(mixed $value): void
+    {
+        $data = $this->error($this->tool->execute(options: ['test-framework-extra-args' => $value]));
+
+        self::assertContains($data['error'], ['Invalid value for the option "test-framework-extra-args".', 'The option "test-framework-extra-args" takes a single value.']);
+    }
+
     public function testRejectsAnOptionTheInstalledInfectionDoesNotKnow(): void
     {
         $data = $this->error($this->tool->execute(options: ['brand-new' => true]));
 
         self::assertSame('The installed Infection does not support the option "brand-new".', $data['error']);
-        self::assertSame('Use one of: threads, mutators, git-diff-base, show-mutations, filter, git-diff-lines, only-covering-test-cases.', $data['hint']);
+        self::assertSame('Use one of: threads, mutators, git-diff-base, show-mutations, filter, git-diff-lines, only-covering-test-cases, id, test-framework-extra-args.', $data['hint']);
         self::assertCount(1, $this->executor->calls);
     }
 
@@ -396,7 +509,7 @@ class RunToolTest extends TestCase
         self::assertNull($data['runId']);
         self::assertSame(50, $data['stats']['msi']);
         self::assertSame(['src/Calc.php' => 1, 'src/Str/Slugger.php' => 1], $data['escapedByFile']);
-        self::assertStringStartsWith('Run could not be cached, so infection-escaped, infection-mutant and infection-summary cannot follow up: Cannot create cache directory', $data['warning']);
+        self::assertStringStartsWith('Run could not be cached, so infection-escaped and infection-summary cannot follow up: Cannot create cache directory', $data['warning']);
         self::assertSame('warning', array_key_last($data));
     }
 
@@ -450,7 +563,7 @@ class RunToolTest extends TestCase
         $data = $this->untrusted($this->tool->execute());
 
         self::assertSame('Infection produced no JSON log.', $data['error']);
-        self::assertSame('It likely failed before mutating: no coverage driver (pcov/xdebug), failing initial tests, or invalid config. See output.', $data['hint']);
+        self::assertSame('It likely failed before mutating: no coverage driver (pcov/xdebug), failing initial tests, failing initial static analysis (for example errors in new test code), invalid config, or another Infection run sharing the system temp directory (retry once that one finished). See output, and outputFile for all of it.', $data['hint']);
         self::assertSame('outerr', $data['output']);
         self::assertSame([], $this->cache->ids());
     }
@@ -477,13 +590,17 @@ class RunToolTest extends TestCase
         self::assertSame('Could not read the Infection log: Not an Infection JSON log: "stats" is missing.', $data['error']);
     }
 
-    public function testKeepsOnlyTheLastTwoThousandBytesOfOutput(): void
+    public function testKeepsTheHeadAndTheTailOfLongOutputAndTheFullOutputInAFile(): void
     {
-        $this->configureFake(['mode' => 'nolog', 'stdout' => str_repeat('A', 3000).str_repeat('B', 2000)]);
+        $output = str_repeat('A', 3000).str_repeat('M', 4000).str_repeat('B', 6000);
+        $this->configureFake(['mode' => 'nolog', 'stdout' => $output]);
 
         $data = $this->untrusted($this->tool->execute());
 
-        self::assertSame(str_repeat('B', 2000), $data['output']);
+        self::assertSame(str_repeat('A', 2000)."\n[… 5000 bytes left out; full output: ".$data['outputFile']." …]\n".str_repeat('B', 6000), $data['output']);
+        self::assertStringStartsWith($this->root.'/outputs/', $data['outputFile']);
+        self::assertStringEndsWith('-failure.log', $data['outputFile']);
+        self::assertSame($output, file_get_contents($data['outputFile']));
     }
 
     public function testKeepsShortOutputUntouched(): void
@@ -493,16 +610,55 @@ class RunToolTest extends TestCase
         $data = $this->untrusted($this->tool->execute());
 
         self::assertSame(str_repeat('A', 2000), $data['output']);
+        self::assertSame(str_repeat('A', 2000), file_get_contents($data['outputFile']));
+    }
+
+    public function testCleansTheOutputOfWhatOnlyTakesRoom(): void
+    {
+        $this->configureFake(['mode' => 'nolog', 'stdout' => "   0/39 [░░░░░░░░░░░░░░░░░░░░░░░░░░░░]   0%\n\n         [ERROR]   Found 3 errors      \n"]);
+
+        $data = $this->untrusted($this->tool->execute());
+
+        self::assertSame('  [ERROR] Found 3 errors', $data['output']);
     }
 
     public function testTruncatesOutputWithoutSplittingMultibyteCharacters(): void
     {
-        $this->configureFake(['mode' => 'nolog', 'stdout' => str_repeat('é', 1500).'x']);
+        $this->configureFake(['mode' => 'nolog', 'stdout' => str_repeat('é', 5000).'x']);
 
         $data = $this->untrusted($this->tool->execute());
 
-        self::assertSame(str_repeat('é', 1000).'x', $data['output']);
+        self::assertSame(str_repeat('é', 1000)."\n[… 2000 bytes left out; full output: ".$data['outputFile']." …]\n".str_repeat('é', 3000).'x', $data['output']);
         self::assertTrue(mb_check_encoding($data['output'], 'UTF-8'));
+    }
+
+    public function testReturnsTheExcerptWithoutAFileWhenTheOutputCannotBeKept(): void
+    {
+        file_put_contents($this->root.'/outputs', 'a file where the directory should be');
+        $this->configureFake(['mode' => 'nolog', 'stdout' => str_repeat('A', 9000)]);
+
+        $data = $this->untrusted($this->tool->execute());
+
+        self::assertArrayNotHasKey('outputFile', $data);
+        self::assertSame(str_repeat('A', 2000)."\n[… 1000 bytes left out …]\n".str_repeat('A', 6000), $data['output']);
+    }
+
+    public function testKeepsTheOutputOfATimedOutRunInAFileToo(): void
+    {
+        $this->configureFake(['mode' => 'sleep', 'stdout' => 'still running']);
+
+        $data = $this->untrusted($this->tool->execute(timeout: 1));
+
+        self::assertSame('Infection timed out.', $data['error']);
+        self::assertSame('still running', file_get_contents($data['outputFile']));
+    }
+
+    public function testErrorsWithoutOutputHaveNoOutputFile(): void
+    {
+        $data = $this->decode($this->tool->execute(timeout: 0));
+
+        self::assertArrayNotHasKey('outputFile', $data);
+        self::assertArrayNotHasKey('output', $data);
     }
 
     public function testDoesNotLeaveTemporaryConfigBehind(): void
@@ -533,6 +689,7 @@ class RunToolTest extends TestCase
             $this->cache = new RunCache($this->root.'/cache'),
             new ResultFormatter($this->root, $paths),
             new ArgumentResolver($this->root, $paths, new InfectionCapabilities($this->root, new ConfigurationDiscovery($this->root), $this->executor)),
+            new OutputStore($this->root.'/outputs'),
             $this->root,
         );
     }
@@ -570,6 +727,7 @@ class RunToolTest extends TestCase
             'log' => str_replace('/project/', $this->root.'/', (string) file_get_contents(__DIR__.'/../../Fixtures/infection-log.json')),
             'invalid' => 'not json',
             'empty' => '{}',
+            'nomatch' => '{"stats":{"totalMutantsCount":0,"msi":0}}',
             default => null,
         };
 

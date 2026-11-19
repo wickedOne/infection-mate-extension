@@ -10,6 +10,7 @@
 
 namespace WickedOne\InfectionExtension\Parser;
 
+use WickedOne\InfectionExtension\Enum\BucketEnum;
 use WickedOne\InfectionExtension\Filesystem\PathResolver;
 
 /**
@@ -19,8 +20,6 @@ use WickedOne\InfectionExtension\Filesystem\PathResolver;
  */
 class JsonLogParser
 {
-    public const array BUCKETS = ['escaped', 'timeouted', 'killed', 'killedByStaticAnalysis', 'errored', 'syntaxErrors', 'uncovered', 'ignored'];
-
     public function __construct(
         private readonly PathResolver $paths,
     ) {
@@ -41,8 +40,8 @@ class JsonLogParser
         $roots = '' === $projectRoot ? [] : [$projectRoot, $this->paths->resolve($projectRoot)];
         $mutants = [];
 
-        foreach (self::BUCKETS as $bucket) {
-            foreach ($data[$bucket] ?? [] as $entry) {
+        foreach (BucketEnum::cases() as $bucket) {
+            foreach ($data[$bucket->value] ?? [] as $entry) {
                 $file = (string) ($entry['mutator']['originalFilePath'] ?? '');
 
                 $mutants[] = new MutantResult(

@@ -17,7 +17,8 @@ use WickedOne\InfectionExtension\Discovery\ConfigurationDiscovery;
  */
 class InfectionRunner
 {
-    private const int DESCRIBE_TIMEOUT = 60;
+    public const string LOG_OPTION = 'logger-json';
+
     private const string TEMP_PREFIX = '.infection.mate.';
     private const int STALE_AFTER = 86400;
 
@@ -40,7 +41,7 @@ class InfectionRunner
 
         try {
             $result = $this->executor->execute(
-                [...$this->configuration->binary(), '--logger-json='.$logFile, '--no-progress', '--no-interaction', '--no-ansi', ...$arguments],
+                [...$this->configuration->binary(), '--'.self::LOG_OPTION.'='.$logFile, '--no-progress', '--no-interaction', '--no-ansi', ...$arguments],
                 $this->projectRoot,
                 $timeout ?? $this->defaultTimeout,
             );
@@ -55,11 +56,6 @@ class InfectionRunner
         } finally {
             @unlink($logFile);
         }
-    }
-
-    public function describe(string $mutator): RunResult
-    {
-        return $this->executor->execute([...$this->configuration->binary(), 'describe', '--no-ansi', '--no-interaction', $mutator], $this->projectRoot, self::DESCRIBE_TIMEOUT);
     }
 
     /**

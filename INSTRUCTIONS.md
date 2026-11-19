@@ -2,16 +2,16 @@
 
 Mutation testing with Infection. Use these tools instead of running `vendor/bin/infection` directly: they return compact, structured results and remember runs.
 
-| User intent                                            | Tool                                              |
-|--------------------------------------------------------|---------------------------------------------------|
-| Run mutation testing, check the mutation score (MSI)   | `infection-run` (scope with `paths` or `options`) |
-| What do the results look like, where are the test gaps | `infection-summary`                               |
-| Which mutants escaped, which code is uncovered         | `infection-escaped`                               |
-| Why did this mutant escape, how do I kill it           | `infection-mutant`                                |
-| What does this mutator do                              | `infection-describe-mutator`                      |
-| How is Infection configured                            | `infection://config`                              |
+| User intent                                            | Tool                                                       |
+|--------------------------------------------------------|------------------------------------------------------------|
+| Run mutation testing, check the mutation score (MSI)   | `infection-run` (scope with `paths` or `options`)          |
+| What do the results look like, where are the test gaps | `infection-summary`                                        |
+| Which mutants escaped, which code is uncovered         | `infection-escaped` (`idsOnly` for just the ids)           |
+| Why did this mutant escape, how do I kill it           | `infection-escaped` with an `id` for one mutant            |
+| Check that the new tests kill specific mutants         | `infection-run` with the `id` option, a list of mutant ids |
+| How is Infection configured                            | `infection://config`                                       |
 
-Start with `infection-run`, keep its `runId`, and drill down with the other tools instead of re-running. To re-check specific mutants after writing tests, run `infection-run` again with the `id` option set to a list of mutant ids from `infection-escaped`. The `mate-infection-mutation-testing` skill has the workflow, how to read each bucket, equivalent-mutant handling and the failure paths.
+Start with `infection-run`, keep its `runId`, and drill down with the other tools instead of re-running. From the CLI, array and object parameters (`paths`, `options`) are not scalars, so `--<param>=<value>` fails with "Cannot cast value to array": pass them with `--json='{...}'`. The `mate-infection-mutation-testing` skill has the workflow, re-running specific mutants, how to read each bucket, equivalent-mutant handling and the failure paths.
 
 ## Resources
 

@@ -9,11 +9,10 @@
  */
 
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
+use WickedOne\InfectionExtension\Cache\OutputStore;
 use WickedOne\InfectionExtension\Cache\RunCache;
 use WickedOne\InfectionExtension\Capability\ConfigResource;
-use WickedOne\InfectionExtension\Capability\DescribeMutatorTool;
 use WickedOne\InfectionExtension\Capability\EscapedTool;
-use WickedOne\InfectionExtension\Capability\MutantTool;
 use WickedOne\InfectionExtension\Capability\RunTool;
 use WickedOne\InfectionExtension\Capability\SummaryTool;
 use WickedOne\InfectionExtension\Discovery\ConfigurationDiscovery;
@@ -46,12 +45,12 @@ return static function (ContainerConfigurator $container): void {
         ->arg('$projectRoot', '%mate.root_dir%');
     $services->set(RunCache::class)
         ->arg('$directory', '%mate.cache_dir%/infection-runs');
+    $services->set(OutputStore::class)
+        ->arg('$directory', '%mate.cache_dir%/infection-outputs');
 
     $services->set(RunTool::class)
         ->arg('$projectRoot', '%mate.root_dir%');
     $services->set(EscapedTool::class);
-    $services->set(MutantTool::class);
     $services->set(SummaryTool::class);
-    $services->set(DescribeMutatorTool::class);
     $services->set(ConfigResource::class);
 };

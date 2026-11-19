@@ -4,21 +4,23 @@ Infection extension for Symfony Mate (`wickedone/infection-mate-extension`, name
 
 ## Structure
 
-- `src/Capability/`: `RunTool` (`infection-run`), `SummaryTool` (`infection-summary`), `EscapedTool` (`infection-escaped`), `MutantTool` (`infection-mutant`), `DescribeMutatorTool` (`infection-describe-mutator`), `ConfigResource` (`infection://config`)
-- `src/Runner/`: `InfectionRunner`, `ProcessExecutor`, `RunResult`; `Runner/Argument/`: `ArgumentResolver`, `InfectionCapabilities`; `Runner/Exception/InvalidArgumentException` carries the `hint` returned to the agent
-- `src/Parser/`: `JsonLogParser` turns the JSON log into `MutantResult`s, one per entry in `JsonLogParser::BUCKETS`
-- `src/Cache/RunCache`: parsed runs by `runId`, last 10, in `%mate.cache_dir%/infection-runs`
+- `src/Capability/`: `RunTool` (`infection-run`), `SummaryTool` (`infection-summary`), `EscapedTool` (`infection-escaped`, lists a bucket or, with an `id`, inspects one mutant), `ConfigResource` (`infection://config`)
+- `src/Runner/`: `InfectionRunner`, `ProcessExecutor`, `RunResult`; `Runner/Argument/`: `ArgumentResolver` (returns `ResolvedArguments`: the arguments plus whether the `id` option limits the run), `InfectionCapabilities`; `Runner/Exception/InvalidArgumentException` carries the `hint` returned to the agent
+- `src/Parser/`: `JsonLogParser` turns the JSON log into `MutantResult`s, one per entry of each `BucketEnum` group
+- `src/Cache/RunCache`: parsed runs by `runId`, last 10 regular and last 10 partial ones (id ends in `p`, never the default `runId`, unless there is no regular run), in `%mate.cache_dir%/infection-runs`
 - `src/Discovery/ConfigurationDiscovery`: finds `infection.json5`, `infection.json` or their `.dist` variants, and the binary (`vendor/bin/infection`, else a global `infection`)
 - `src/Formatter/ResultFormatter`: summary, paged listing and single-mutant payloads
+- `src/Enum/`: `BucketEnum`, the outcome groups of the JSON log (the order of its cases is the order `JsonLogParser` reads them in); `EquivalenceNoteEnum` and `KillHintEnum`, the advice texts as backed enums, each with a `forMutant()` that picks the case for an escaped mutant (`null` when none fits)
+- `src/Formatter/OutputExcerpt` cleans process output and cuts it in the middle above `LIMIT`; `src/Cache/OutputStore` keeps the full output of failed runs and inspected mutants in `%mate.cache_dir%/infection-outputs` (newest 20), so responses carry an excerpt plus the file path
 - `src/Filesystem/PathResolver`
 - `config/config.php` registers every service; `INSTRUCTIONS.md` maps user intents to tools; `skills/infection-mutation-testing/SKILL.md` is the Agent Skill (declared in `extra.ai-mate.skills`)
 
 ## Design rules
 
 - `InfectionRunner` passes `--logger-json=<project root>/.infection.mate.<token>.log.json`, reads the file back and deletes it; leftovers older than a day are swept at the next run
-- `InfectionCapabilities` reads `infection run --help --format=json` once per request; `ArgumentResolver` validates the names and value shapes of `options` against it, so no Infection option is named in code except the ones the extension manages (`ArgumentResolver::MANAGED` and `logger-*`)
+- `InfectionCapabilities` reads `infection run --help --format=json` once per request; `ArgumentResolver` validates the names and value shapes of `options` against it, so no Infection option is named in code except the ones the extension manages (`ArgumentResolver::MANAGED` and `logger-*`), `id` and `test-framework-extra-args` (raw test framework arguments, so its value may start with a dash); it also rejects an Infection without `logger-json` before running
 - `paths` must be relative, exist and resolve inside the project root
-- a mutant `id` is the hash Infection logs per entry (what `--id` takes, repeatable); `infection-mutant` looks it up within one `runId`, and re-running specific mutants goes through the generic `id` option, so no code names it
+- a mutant `id` is the hash Infection logs per entry (what `--id` takes, repeatable); `infection-escaped` with an `id` looks it up within one `runId`, and re-running specific mutants goes through the repeatable `id` option in the `options` of `infection-run` (a list; `ArgumentResolver` rejects an empty one); such a run is stored with its number of selected mutants (`RunCache` `selected`) so summaries mark it `partial`
 - `ProcessExecutor` is the only place a process is started and `PathResolver` the only `realpath` caller; these two seams keep everything else free of real I/O
 - tools return `ResponseEncoder` strings; content from the inspected project (diffs, source, test output) goes through `encodeUntrusted`; failures are returned as `{error, hint[, output]}` payloads, never thrown
 

@@ -34,6 +34,9 @@
     "phpunit/phpunit": "^10.0 || ^11.0 || ^12.0 || ^13.4.7",
     "rector/rector": "^2.8.5"
   },
+  "conflict": {
+    "infection/infection": "<0.35.11"
+  },
   "suggest": {
     "helgesverre/toon": "Makes tool responses use the token-efficient TOON format instead of JSON (use ^3.2.1)",
     "infection/infection": "Required in the project under test: the tools run its vendor/bin/infection binary (or a global infection)"

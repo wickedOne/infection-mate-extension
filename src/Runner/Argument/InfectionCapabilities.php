@@ -11,6 +11,8 @@
 namespace WickedOne\InfectionExtension\Runner\Argument;
 
 use WickedOne\InfectionExtension\Discovery\ConfigurationDiscovery;
+use WickedOne\InfectionExtension\Runner\Exception\InvalidArgumentException;
+use WickedOne\InfectionExtension\Runner\InfectionRunner;
 use WickedOne\InfectionExtension\Runner\ProcessExecutor;
 
 /**
@@ -23,6 +25,9 @@ use WickedOne\InfectionExtension\Runner\ProcessExecutor;
  */
 class InfectionCapabilities
 {
+    // first release with the json logger the extension reads its results from
+    public const string MINIMUM_VERSION = '0.35.11';
+
     private const int TIMEOUT = 60;
 
     /** @var array{options: array<string, OptionShape>, arguments: list<string>}|null */
@@ -50,6 +55,20 @@ class InfectionCapabilities
         }
 
         return $this->definition;
+    }
+
+    /**
+     * a definition that cannot be read is let through, running then shows what is wrong.
+     *
+     * @throws InvalidArgumentException
+     */
+    public function assertWritesJsonLog(): void
+    {
+        $definition = $this->definition();
+
+        if (null !== $definition && !isset($definition['options'][InfectionRunner::LOG_OPTION])) {
+            throw new InvalidArgumentException(\sprintf('The installed Infection does not support the option "%s", which the extension needs to read the results.', InfectionRunner::LOG_OPTION), 'Update infection/infection to '.self::MINIMUM_VERSION.' or newer.');
+        }
     }
 
     /**

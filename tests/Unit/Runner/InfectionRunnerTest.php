@@ -166,37 +166,6 @@ class InfectionRunnerTest extends TestCase
         self::assertSame(5, $this->executor->lastCall()['timeout']);
     }
 
-    public function testDescribeRunsInfectionDescribeAndReturnsOutput(): void
-    {
-        $result = $this->runner()->describe('Plus');
-
-        self::assertSame(0, $result->exitCode);
-        self::assertNull($result->log);
-        self::assertFalse($result->timedOut);
-        self::assertSame("described:Plus\n", $result->output);
-        self::assertSame(['infection', 'describe', '--no-ansi', '--no-interaction', 'Plus'], $this->executor->lastCall()['command']);
-        self::assertSame($this->root, $this->executor->lastCall()['cwd']);
-        self::assertSame(60, $this->executor->lastCall()['timeout']);
-    }
-
-    public function testDescribeStartsTheProjectBinaryWhenInstalled(): void
-    {
-        mkdir($this->root.'/vendor/bin', 0o775, true);
-        file_put_contents($this->root.'/vendor/bin/infection', '');
-
-        $this->runner()->describe('Plus');
-
-        self::assertSame([\PHP_BINARY, $this->root.'/vendor/bin/infection', 'describe'], \array_slice($this->executor->lastCall()['command'], 0, 3));
-    }
-
-    public function testDescribeReturnsExitCodeAndErrorOutput(): void
-    {
-        $result = $this->runner()->describe('Unknown');
-
-        self::assertSame(3, $result->exitCode);
-        self::assertSame("no such mutator\n", $result->output);
-    }
-
     public function testRunUsesUniqueTokenInTemporaryLogPath(): void
     {
         $runner = $this->runner();
@@ -212,13 +181,6 @@ class InfectionRunnerTest extends TestCase
      */
     private function handle(array $command, string $cwd): RunResult
     {
-        if (\in_array('describe', $command, true)) {
-            return match (end($command)) {
-                'Unknown' => new RunResult(3, "no such mutator\n", null),
-                default => new RunResult(0, 'described:'.end($command)."\n", null),
-            };
-        }
-
         $logPath = '';
         $exit = 0;
         $sleep = false;

@@ -27,12 +27,12 @@ class SummaryTool
     }
 
     /**
-     * @param string|null $runId run id from infection-run; defaults to the latest run
+     * @param string|null $runId run id from infection-run; defaults to the latest regular run, not a partial one
      */
     #[MateTool(
         name: 'infection-summary',
         title: 'Summarise run',
-        description: 'Summarise a previous infection-run: MSI, counts per outcome, and escaped mutants grouped by file and mutator. Use to find test gaps at a glance, or to compare MSI before and after adding tests (latest runs are listed in recentRuns).'
+        description: 'Summarise a previous infection-run: MSI, counts per outcome, and escaped mutants grouped by file and mutator. Use to find test gaps at a glance, or to compare MSI before and after adding tests (latest runs are listed in recentRuns; a partial run is not the default, pass its runId).'
     )]
     public function execute(?string $runId = null): string
     {
@@ -42,6 +42,6 @@ class SummaryTool
             return ResponseEncoder::encode(['error' => 'Run not found.', 'hint' => 'Call infection-run first.']);
         }
 
-        return ResponseEncoder::encodeUntrusted($this->formatter->summary($run['id'], $run['stats'], $run['mutants'], $run['exitCode']) + ['recentRuns' => \array_slice($this->cache->ids(), 0, 5)]);
+        return ResponseEncoder::encodeUntrusted($this->formatter->summary($run['id'], $run['stats'], $run['mutants'], $run['exitCode'], $run['selected']) + ['recentRuns' => \array_slice($this->cache->ids(), 0, 5)]);
     }
 }

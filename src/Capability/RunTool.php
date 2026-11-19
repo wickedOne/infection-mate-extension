@@ -12,7 +12,9 @@ namespace WickedOne\InfectionExtension\Capability;
 
 use Symfony\AI\Mate\Attribute\MateTool;
 use Symfony\AI\Mate\Encoding\ResponseEncoder;
+use WickedOne\InfectionExtension\Cache\OutputStore;
 use WickedOne\InfectionExtension\Cache\RunCache;
+use WickedOne\InfectionExtension\Formatter\OutputExcerpt;
 use WickedOne\InfectionExtension\Formatter\ResultFormatter;
 use WickedOne\InfectionExtension\Parser\JsonLogParser;
 use WickedOne\InfectionExtension\Runner\Argument\ArgumentResolver;
@@ -30,30 +32,31 @@ class RunTool
         private readonly RunCache $cache,
         private readonly ResultFormatter $formatter,
         private readonly ArgumentResolver $arguments,
+        private readonly OutputStore $outputs,
         private readonly string $projectRoot,
     ) {
     }
 
     /**
      * @param string[]|null                $paths   source files or directories (relative to the project root) to mutate; omit for the configured sources
-     * @param array<array-key, mixed>|null $options Infection run options by name without dashes, validated against the installed Infection; true switches a flag on, for example {"git-diff-lines": true, "git-diff-base": "main", "mutators": "@default", "only-covering-test-cases": true, "threads": 4, "id": ["<mutant id>"]}
+     * @param array<array-key, mixed>|null $options Infection run options by name without dashes, validated against the installed Infection; true switches a flag on, for example {"git-diff-lines": true, "git-diff-base": "main", "mutators": "@default", "only-covering-test-cases": true, "threads": 4}; to re-run specific mutants pass the repeatable id option as a list of mutant ids from infection-escaped, for example {"id": ["<mutant id>"]}
      * @param int|null                     $timeout overall timeout in seconds (default 1800)
      */
     #[MateTool(
         name: 'infection-run',
         title: 'Run Infection',
-        description: 'Run mutation testing with Infection. Use when the user asks for mutation testing, the mutation score (MSI), or escaped mutants. Scope the run with paths or the git-diff-lines option, because full runs are slow. Options map to the installed Infection\'s run options; an unknown one is rejected with the list of valid names. Pass the id option (a list of mutant ids from infection-escaped) to re-run only those mutants after adding tests. Returns stats and a runId; follow up with infection-escaped, infection-mutant or infection-summary instead of re-running.'
+        description: 'Run mutation testing with Infection. Use when the user asks for mutation testing, the mutation score (MSI), or escaped mutants. Scope the run with paths or the git-diff-lines option, because full runs are slow. Options map to the installed Infection\'s run options; an unknown one is rejected with the list of valid names. Pass the id option (a list of mutant ids from infection-escaped) to re-run only those mutants after adding tests; such a run is marked partial, its stats cover just those mutants. Returns stats and a runId; follow up with infection-escaped or infection-summary instead of re-running.'
     )]
     public function execute(?array $paths = null, ?array $options = null, ?int $timeout = null): string
     {
         try {
-            $arguments = $this->arguments->resolve($paths, $options, $timeout);
+            $resolved = $this->arguments->resolve($paths, $options, $timeout);
         } catch (InvalidArgumentException $e) {
             return $this->error($e->getMessage(), $e->hint);
         }
 
         try {
-            $result = $this->runner->run($arguments, $timeout);
+            $result = $this->runner->run($resolved->arguments, $timeout);
         } catch (\Throwable $e) {
             return $this->error('Could not run Infection: '.$e->getMessage(), 'Check that infection/infection is installed (composer require --dev infection/infection) and that infection.json5 is valid.');
         }
@@ -65,7 +68,7 @@ class RunTool
         if (null === $result->log) {
             return $this->error(
                 'Infection produced no JSON log.',
-                'It likely failed before mutating: no coverage driver (pcov/xdebug), failing initial tests, or invalid config. See output.',
+                'It likely failed before mutating: no coverage driver (pcov/xdebug), failing initial tests, failing initial static analysis (for example errors in new test code), invalid config, or another Infection run sharing the system temp directory (retry once that one finished). See output, and outputFile for all of it.',
                 $result->output,
             );
         }
@@ -76,16 +79,18 @@ class RunTool
             return $this->error('Could not read the Infection log: '.$e->getMessage(), 'Run infection manually to inspect the problem.', $result->output);
         }
 
+        // the log only holds the selected mutants infection still knows
+        $selected = $resolved->limitedToIds ? \count($parsed['mutants']) : null;
         $warning = null;
 
         try {
-            $runId = $this->cache->store($parsed['stats'], $parsed['mutants'], $result->exitCode);
+            $runId = $this->cache->store($parsed['stats'], $parsed['mutants'], $result->exitCode, $selected);
         } catch (\Throwable $e) {
             $runId = null;
-            $warning = 'Run could not be cached, so infection-escaped, infection-mutant and infection-summary cannot follow up: '.$e->getMessage();
+            $warning = 'Run could not be cached, so infection-escaped and infection-summary cannot follow up: '.$e->getMessage();
         }
 
-        $summary = $this->formatter->summary($runId, $parsed['stats'], $parsed['mutants'], $result->exitCode);
+        $summary = $this->formatter->summary($runId, $parsed['stats'], $parsed['mutants'], $result->exitCode, $selected);
 
         return ResponseEncoder::encodeUntrusted(null === $warning ? $summary : $summary + ['warning' => $warning]);
     }
@@ -96,6 +101,9 @@ class RunTool
             return ResponseEncoder::encode(['error' => $message, 'hint' => $hint]);
         }
 
-        return ResponseEncoder::encodeUntrusted(['error' => $message, 'hint' => $hint, 'output' => mb_strcut($output, max(0, \strlen($output) - 2000))]);
+        // the response only carries an excerpt, the full output stays readable in a file
+        $file = $this->outputs->save('failure', $output);
+
+        return ResponseEncoder::encodeUntrusted(['error' => $message, 'hint' => $hint, 'output' => OutputExcerpt::of($output, $file)] + (null === $file ? [] : ['outputFile' => $file]));
     }
 }

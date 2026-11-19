@@ -11,6 +11,7 @@
 namespace WickedOne\InfectionExtension\Tests\Unit\Parser;
 
 use PHPUnit\Framework\TestCase;
+use WickedOne\InfectionExtension\Enum\BucketEnum;
 use WickedOne\InfectionExtension\Parser\JsonLogParser;
 use WickedOne\InfectionExtension\Parser\MutantResult;
 use WickedOne\InfectionExtension\Tests\Support\FakePathResolver;
@@ -51,7 +52,7 @@ class JsonLogParserTest extends TestCase
     {
         $mutant = $this->parser->parse($this->fixture)['mutants'][0];
 
-        self::assertSame('escaped', $mutant->bucket);
+        self::assertSame(BucketEnum::Escaped, $mutant->bucket);
         self::assertSame('escaped-0', $mutant->id);
         self::assertSame('GreaterThanOrEqualTo', $mutant->mutator);
         self::assertSame(12, $mutant->line);
@@ -111,7 +112,7 @@ class JsonLogParserTest extends TestCase
 
         $mutant = $this->parser->parse((string) $log)['mutants'][0];
 
-        self::assertSame('killed', $mutant->bucket);
+        self::assertSame(BucketEnum::Killed, $mutant->bucket);
         self::assertSame('unknown', $mutant->mutator);
         self::assertSame('', $mutant->file);
         self::assertSame(0, $mutant->line);
