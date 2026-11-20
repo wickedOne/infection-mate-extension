@@ -12,6 +12,7 @@ namespace WickedOne\InfectionExtension\Tests\Unit\Cache;
 
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\RequiresPhp;
 use PHPUnit\Framework\TestCase;
 use WickedOne\InfectionExtension\Cache\RunCache;
 use WickedOne\InfectionExtension\Enum\BucketEnum;
@@ -283,6 +284,7 @@ class RunCacheTest extends TestCase
         self::assertSame(0o775, fileperms($this->directory) & 0o777);
     }
 
+    #[RequiresPhp('< 8.6.0')] // vfsStream throws a deprecation warning for spl_object_hash usage
     public function testStoreIdStartsWithCurrentMillisecondTimestamp(): void
     {
         $deprecations = [];
