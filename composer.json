@@ -19,7 +19,7 @@
     }
   ],
   "require": {
-    "php": "~8.3 || ~8.4 || ~8.5",
+    "php": "~8.3 || ~8.4 || ~8.5 || ~8.6",
     "ext-mbstring": "*",
     "colinodell/json5": "^3.0",
     "symfony/ai-mate": "^0.13 || ^0.14 || ^1.0.0-BETA1 || dev-main",
