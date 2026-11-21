@@ -12,7 +12,7 @@ namespace WickedOne\InfectionExtension\Formatter;
 
 use WickedOne\InfectionExtension\Enum\BucketEnum;
 use WickedOne\InfectionExtension\Enum\EquivalenceNoteEnum;
-use WickedOne\InfectionExtension\Enum\KillHintEnum;
+use WickedOne\InfectionExtension\Enum\RemedyEnum;
 use WickedOne\InfectionExtension\Filesystem\PathResolver;
 use WickedOne\InfectionExtension\Parser\MutantResult;
 
@@ -62,7 +62,7 @@ class ResultFormatter
      */
     public function listing(string $runId, array $mutants, int $limit, int $offset): array
     {
-        // the kill hints are listed once per mutator for the page instead of on every entry
+        // the hints are listed once per mutator for the page instead of on every entry
         $hints = $this->hints(\array_slice($mutants, $offset, $limit));
 
         return $this->page($runId, $mutants, $limit, $offset, 'mutants', fn (MutantResult $m): array => [
@@ -161,11 +161,11 @@ class ResultFormatter
             return $note?->value;
         }
 
-        return KillHintEnum::forMutant($mutant)?->value;
+        return RemedyEnum::forMutant($mutant)?->value;
     }
 
     /**
-     * the kill hints of the escaped mutants of a page that have no equivalence note, once per mutator.
+     * the hints of the escaped mutants of a page that have no equivalence note, once per mutator.
      *
      * @param array<int, MutantResult> $page
      *
@@ -180,9 +180,9 @@ class ResultFormatter
                 continue;
             }
 
-            $hint = KillHintEnum::forMutant($mutant);
+            $hint = RemedyEnum::forMutant($mutant);
 
-            if ($hint instanceof KillHintEnum) {
+            if ($hint instanceof RemedyEnum) {
                 $hints[$mutant->mutator] = $hint->value;
             }
         }

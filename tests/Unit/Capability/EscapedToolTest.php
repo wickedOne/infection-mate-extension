@@ -248,7 +248,9 @@ class EscapedToolTest extends TestCase
 
         $data = $this->untrusted($this->tool->execute());
 
-        self::assertSame(['runId', 'total', 'offset', 'count', 'mutants'], array_keys($data));
+        // the seeded mutators have a remedy, listed once per mutator ahead of the mutants
+        self::assertSame(['runId', 'total', 'offset', 'count', 'hints', 'mutants'], array_keys($data));
+        self::assertSame(['GreaterThanOrEqualTo', 'Increment'], array_keys($data['hints']));
         self::assertSame(['id', 'mutator', 'file', 'line', 'diff'], array_keys($data['mutants'][0]));
     }
 

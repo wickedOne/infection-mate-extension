@@ -39,7 +39,7 @@ class EscapedTool
      * @param int         $limit      page size, default 20, at most 100; page with offset when total is larger
      * @param int         $offset     page offset
      * @param bool        $idsOnly    only list the ids of the page, without diffs, to hand straight to the id option of infection-run
-     * @param string|null $id         inspect this one mutant, whatever its bucket, instead of listing: its diff, the surrounding source lines and a kill hint or note; bucket, file, mutator and paging are ignored
+     * @param string|null $id         inspect this one mutant, whatever its bucket, instead of listing: its diff, the surrounding source lines and a hint or note; bucket, file, mutator and paging are ignored
      * @param bool        $withOutput with id, include the test runner output for this mutant, cleaned and cut when long; the full output is kept in the file named in processOutputFile
      */
     #[MateTool(

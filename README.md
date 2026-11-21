@@ -9,8 +9,6 @@
 
 A [Symfony Mate](https://symfony.com/doc/current/ai/components/mate.html) extension that lets coding agents run [Infection](https://infection.github.io/) mutation testing and work with its results: find escaped mutants, understand why they escaped, and write tests that kill them.
 
-It is built on data Infection already produces (its JSON log). The ideas come from the "AI-assisted mutation testing" section of [infection/infection#3498](https://github.com/infection/infection/issues/3498), where the agent supplies the reasoning and this extension supplies the evidence.
-
 ## Installation
 
 ```bash
@@ -26,7 +24,7 @@ The project needs `infection/infection` (with `--logger-json`, see below), a tes
 |------------------------------|----------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `infection-run`              | tool     | Run Infection, scoped by `paths` and any `options` of the installed Infection, or limited to specific mutants with the `id` option (marked `partial`). Returns stats and a `runId` |
 | `infection-summary`          | tool     | MSI, outcome counts, escaped mutants grouped by file and mutator                                                                                                                   |
-| `infection-escaped`          | tool     | List mutants of a run by bucket, `file` or `mutator`, paged (20 by default, at most 100); `idsOnly` lists just the ids, and mutants of often-equivalent mutators carry a `note`; a `hints` map lists how to kill the others, once per mutator; with an `id` it returns that one mutant instead (diff, surrounding source lines, optional test output with `withOutput`, and the note or kill hint)    |
+| `infection-escaped`          | tool     | List mutants of a run by bucket, `file` or `mutator`, paged (20 by default, at most 100); `idsOnly` lists just the ids, and mutants of often-equivalent mutators carry a `note`; a `hints` map lists the usual way to write the killing test for the others, once per mutator; with an `id` it returns that one mutant instead (diff, surrounding source lines, optional test output with `withOutput`, and the note or hint)    |
 | `infection://config`         | resource | The project's Infection configuration                                                                                                                                              |
 
 Agents call them through the `vendor/bin/mate` CLI:

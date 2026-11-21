@@ -209,13 +209,14 @@ class ResultFormatterTest extends TestCase
         $mutant = new MutantResult(BucketEnum::Escaped, 'escaped-0', $mutator, 'src/Calc.php', 15, '-$a = $b ? 1 : 2;', '');
 
         self::assertArrayNotHasKey('note', $this->formatter()->listing('r1', [$mutant], 10, 0)['mutants'][0]);
-        self::assertArrayNotHasKey('note', $this->formatter()->mutant('r1', $mutant, false));
+        // without the Traversable note the mutator gets its usual remedy
+        self::assertStringNotContainsString('Traversable', $this->formatter()->mutant('r1', $mutant, false)['note']);
     }
 
     /**
      * @return iterable<string, array{string, string}>
      */
-    public static function killHints(): iterable
+    public static function remedies(): iterable
     {
         yield 'increment integer' => ['IncrementInteger', 'for a default argument call without it'];
         yield 'decrement integer' => ['DecrementInteger', 'for a default argument call without it'];
@@ -223,23 +224,23 @@ class ResultFormatterTest extends TestCase
         yield 'bitwise and' => ['BitwiseAnd', 'every combined flag or bit'];
         yield 'concat' => ['Concat', 'the exact resulting string'];
         yield 'concat operand removal' => ['ConcatOperandRemoval', 'the exact resulting string'];
-        yield 'unwrap finally' => ['UnwrapFinally', 'make the guarded code fail'];
+        yield 'unwrap finally' => ['UnwrapFinally', 'Make the guarded code fail'];
         yield 'unwrap array filter' => ['UnwrapArrayFilter', 'an input the filter would drop'];
         yield 'identical' => ['Identical', 'both sides of the comparison'];
         yield 'not identical' => ['NotIdentical', 'both sides of the comparison'];
         yield 'equal' => ['Equal', 'both sides of the comparison'];
         yield 'not equal' => ['NotEqual', 'both sides of the comparison'];
-        yield 'logical or single negation' => ['LogicalOrSingleSubExprNegation', 'cover each operand on its own'];
-        yield 'logical and' => ['LogicalAnd', 'cover each operand on its own'];
-        yield 'array item removal' => ['ArrayItemRemoval', 'assert the whole array'];
-        yield 'unwrap trim' => ['UnwrapTrim', 'pass input the function changes'];
-        yield 'unwrap ltrim' => ['UnwrapLtrim', 'pass input the function changes'];
-        yield 'unwrap rtrim' => ['UnwrapRtrim', 'pass input the function changes'];
+        yield 'logical or single negation' => ['LogicalOrSingleSubExprNegation', 'Cover each operand on its own'];
+        yield 'logical and' => ['LogicalAnd', 'Cover each operand on its own'];
+        yield 'array item removal' => ['ArrayItemRemoval', 'Assert the whole array'];
+        yield 'unwrap trim' => ['UnwrapTrim', 'Pass input the function changes'];
+        yield 'unwrap ltrim' => ['UnwrapLtrim', 'Pass input the function changes'];
+        yield 'unwrap rtrim' => ['UnwrapRtrim', 'Pass input the function changes'];
         yield 'true value on a plain boolean' => ['TrueValue', 'flips a plain boolean'];
         yield 'false value on a plain boolean' => ['FalseValue', 'flips a plain boolean'];
     }
 
-    #[DataProvider('killHints')]
+    #[DataProvider('remedies')]
     public function testListingHintsHowToKillTheEscapedMutantsOncePerMutator(string $mutator, string $expected): void
     {
         $mutant = new MutantResult(BucketEnum::Escaped, 'escaped-0', $mutator, 'src/Calc.php', 15, '-$extend = true', '');
@@ -251,7 +252,7 @@ class ResultFormatterTest extends TestCase
         self::assertArrayNotHasKey('note', $listing['mutants'][0]);
     }
 
-    #[DataProvider('killHints')]
+    #[DataProvider('remedies')]
     public function testMutantHintsHowToKillTheEscapedMutantInItsNote(string $mutator, string $expected): void
     {
         $mutant = new MutantResult(BucketEnum::Escaped, 'escaped-0', $mutator, 'src/Calc.php', 15, '-$extend = true', '');
@@ -291,7 +292,7 @@ class ResultFormatterTest extends TestCase
     public function testListingHasNoHintsWithoutAHintableEscapedMutant(): void
     {
         $mutants = [
-            new MutantResult(BucketEnum::Escaped, 'escaped-0', 'Plus', 'src/A.php', 1, '-a', ''),
+            new MutantResult(BucketEnum::Escaped, 'escaped-0', 'NotARealMutator', 'src/A.php', 1, '-a', ''),
             new MutantResult(BucketEnum::Killed, 'killed-0', 'Concat', 'src/A.php', 2, '-a', ''),
             new MutantResult(BucketEnum::Escaped, 'escaped-1', 'CastString', 'src/A.php', 3, '-a', ''),
             new MutantResult(BucketEnum::Escaped, 'escaped-2', 'TrueValue', 'src/A.php', 4, "-'a' => true", ''),
@@ -309,7 +310,7 @@ class ResultFormatterTest extends TestCase
         $mutants = [
             new MutantResult(BucketEnum::Killed, 'killed-0', 'Concat', 'src/A.php', 1, '-a', ''),
             new MutantResult(BucketEnum::Escaped, 'escaped-0', 'TrueValue', 'src/A.php', 2, "-'a' => true", ''),
-            new MutantResult(BucketEnum::Escaped, 'escaped-1', 'Plus', 'src/A.php', 3, '-a', ''),
+            new MutantResult(BucketEnum::Escaped, 'escaped-1', 'NotARealMutator', 'src/A.php', 3, '-a', ''),
             new MutantResult(BucketEnum::Escaped, 'escaped-2', 'UnwrapLtrim', 'src/A.php', 4, '-a', ''),
         ];
 
@@ -323,7 +324,7 @@ class ResultFormatterTest extends TestCase
         self::assertArrayNotHasKey('hints', $this->formatter()->ids('r1', $mutants, 10, 0));
     }
 
-    public function testNoKillHintForABooleanArrayValueWhichGetsTheKeysNoteInstead(): void
+    public function testNoRemedyForABooleanArrayValueWhichGetsTheKeysNoteInstead(): void
     {
         $mutant = new MutantResult(BucketEnum::Escaped, 'escaped-0', 'TrueValue', 'src/Calc.php', 15, "-'a' => true", '');
 
@@ -359,7 +360,7 @@ class ResultFormatterTest extends TestCase
         self::assertSame(!$arrayItem, str_contains($note, 'plain boolean'));
     }
 
-    public function testNoKillHintForOtherBuckets(): void
+    public function testNoRemedyForOtherBuckets(): void
     {
         $killed = new MutantResult(BucketEnum::Killed, 'killed-0', 'Concat', 'src/Calc.php', 15, '-a', '');
 
@@ -368,7 +369,7 @@ class ResultFormatterTest extends TestCase
 
     public function testNoNoteForOtherMutatorsOrOtherBuckets(): void
     {
-        $other = new MutantResult(BucketEnum::Escaped, 'escaped-0', 'Plus', 'src/Calc.php', 15, '-a', '');
+        $other = new MutantResult(BucketEnum::Escaped, 'escaped-0', 'NotARealMutator', 'src/Calc.php', 15, '-a', '');
         $killed = new MutantResult(BucketEnum::Killed, 'killed-0', 'TrueValue', 'src/Calc.php', 15, '-a', '');
 
         $listing = $this->formatter()->listing('r1', [$other, $killed], 10, 0);
