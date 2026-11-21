@@ -26,10 +26,10 @@
     "symfony/process": "^5.4 || ^6.4 || ^7.3 || ^8.1.10"
   },
   "require-dev": {
-    "friendsofphp/php-cs-fixer": "^3.95.30",
-    "infection/infection": ">=0.35.11",
+    "friendsofphp/php-cs-fixer": "^3.95.32",
+    "infection/infection": ">=0.35.12",
     "mikey179/vfsstream": "^1.6.12",
-    "phpstan/phpstan": "^2.3.5",
+    "phpstan/phpstan": "^2.3.7",
     "phpstan/phpstan-phpunit": "^2.1.2",
     "phpunit/phpunit": "^10.0 || ^11.0 || ^12.0 || ^13.4.7",
     "rector/rector": "^2.8.5"
