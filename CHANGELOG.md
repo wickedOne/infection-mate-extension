@@ -1,6 +1,11 @@
 CHANGELOG
 =========
 
+0.2.3
+-----
+
+* correct remedies that did not hold for every mutator of their case: `**` (exponent other than 1), `array_any` (the call must return false), `SpreadAssignment` (non-sequential keys), `do-while` (body must run twice), integer and float negation (a returned literal, not an input), loose comparisons (`0 == ''` is false in PHP 8), `Logical*` (all combinations), bit operations, visibility, regex flags, `bccomp`, `str_repeat` and `ReturnRemoval`; `AssignmentEqual` now gets the comparison remedy, `UnwrapStrShuffle` none (random output)
+
 0.2.2
 -----
 

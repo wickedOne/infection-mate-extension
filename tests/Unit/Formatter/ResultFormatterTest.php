@@ -218,10 +218,10 @@ class ResultFormatterTest extends TestCase
      */
     public static function remedies(): iterable
     {
-        yield 'increment integer' => ['IncrementInteger', 'for a default argument call without it'];
-        yield 'decrement integer' => ['DecrementInteger', 'for a default argument call without it'];
-        yield 'bitwise or' => ['BitwiseOr', 'every combined flag or bit'];
-        yield 'bitwise and' => ['BitwiseAnd', 'every combined flag or bit'];
+        yield 'increment integer' => ['IncrementInteger', 'when the literal is a default argument'];
+        yield 'decrement integer' => ['DecrementInteger', 'when the literal is a default argument'];
+        yield 'bitwise or' => ['BitwiseOr', 'exact integer result of the bit operation'];
+        yield 'bitwise and' => ['BitwiseAnd', 'exact integer result of the bit operation'];
         yield 'concat' => ['Concat', 'the exact resulting string'];
         yield 'concat operand removal' => ['ConcatOperandRemoval', 'the exact resulting string'];
         yield 'unwrap finally' => ['UnwrapFinally', 'Make the guarded code fail'];
@@ -230,8 +230,8 @@ class ResultFormatterTest extends TestCase
         yield 'not identical' => ['NotIdentical', 'both sides of the comparison'];
         yield 'equal' => ['Equal', 'both sides of the comparison'];
         yield 'not equal' => ['NotEqual', 'both sides of the comparison'];
-        yield 'logical or single negation' => ['LogicalOrSingleSubExprNegation', 'Cover each operand on its own'];
-        yield 'logical and' => ['LogicalAnd', 'Cover each operand on its own'];
+        yield 'logical or single negation' => ['LogicalOrSingleSubExprNegation', 'Cover every combination of the operands'];
+        yield 'logical and' => ['LogicalAnd', 'Cover every combination of the operands'];
         yield 'array item removal' => ['ArrayItemRemoval', 'Assert the whole array'];
         yield 'unwrap trim' => ['UnwrapTrim', 'Pass input the function changes'];
         yield 'unwrap ltrim' => ['UnwrapLtrim', 'Pass input the function changes'];

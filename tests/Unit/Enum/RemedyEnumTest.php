@@ -25,6 +25,7 @@ class RemedyEnumTest extends TestCase
      */
     private const array EXEMPT = [
         'SyntaxError', // not a mutator, the marker of code that no longer parses
+        'UnwrapStrShuffle', // random output, no deterministic assertion kills it
     ];
 
     private const string ARRAY_ITEM_DIFF = "@@ @@\n-    'extend' => true,\n+    'extend' => false,";
@@ -127,7 +128,7 @@ class RemedyEnumTest extends TestCase
     {
         return [
             'Arithmetic' => ['Plus', 'Minus', 'Multiplication', 'Division', 'Modulus', 'Exponentiation', 'PlusEqual', 'MinusEqual', 'MulEqual', 'DivEqual', 'ModEqual', 'PowEqual'],
-            'Assignment' => ['Assignment', 'AssignmentEqual', 'AssignCoalesce'],
+            'Assignment' => ['Assignment', 'AssignCoalesce'],
             'Counter' => ['Increment', 'Decrement'],
             'Rounding' => ['RoundingFamily'],
             'Bitwise' => ['BitwiseOr', 'BitwiseAnd', 'BitwiseXor', 'BitwiseNot', 'ShiftLeft', 'ShiftRight'],
@@ -135,7 +136,7 @@ class RemedyEnumTest extends TestCase
             'Float' => ['OneZeroFloat'],
             'Negation' => ['IntegerNegation', 'FloatNegation'],
             'Boundary' => ['GreaterThan', 'GreaterThanOrEqualTo', 'LessThan', 'LessThanOrEqualTo'],
-            'Comparison' => ['Identical', 'NotIdentical', 'Equal', 'NotEqual', 'GreaterThanNegotiation', 'GreaterThanOrEqualToNegotiation', 'LessThanNegotiation', 'LessThanOrEqualToNegotiation'],
+            'Comparison' => ['Identical', 'NotIdentical', 'Equal', 'NotEqual', 'AssignmentEqual', 'GreaterThanNegotiation', 'GreaterThanOrEqualToNegotiation', 'LessThanNegotiation', 'LessThanOrEqualToNegotiation'],
             'LooseStrict' => ['EqualIdentical', 'NotEqualNotIdentical', 'NotIdenticalNotEqual'],
             'Logical' => ['LogicalAnd', 'LogicalAndAllSubExprNegation', 'LogicalAndNegation', 'LogicalAndSingleSubExprNegation', 'LogicalLowerAnd', 'LogicalLowerOr', 'LogicalNot', 'LogicalOr', 'LogicalOrAllSubExprNegation', 'LogicalOrNegation', 'LogicalOrSingleSubExprNegation'],
             'Boolean' => ['TrueValue', 'FalseValue'],
@@ -168,7 +169,7 @@ class RemedyEnumTest extends TestCase
             'BigNumber' => ['BCMath'],
             'Concat' => ['Concat', 'ConcatOperandRemoval'],
             'Trim' => ['UnwrapTrim', 'UnwrapLtrim', 'UnwrapRtrim'],
-            'StringTransform' => ['UnwrapLcFirst', 'UnwrapUcFirst', 'UnwrapUcWords', 'UnwrapStrToLower', 'UnwrapStrToUpper', 'UnwrapStrReplace', 'UnwrapStrIreplace', 'UnwrapStrRepeat', 'UnwrapStrRev', 'UnwrapStrShuffle', 'UnwrapSubstr'],
+            'StringTransform' => ['UnwrapLcFirst', 'UnwrapUcFirst', 'UnwrapUcWords', 'UnwrapStrToLower', 'UnwrapStrToUpper', 'UnwrapStrReplace', 'UnwrapStrIreplace', 'UnwrapStrRepeat', 'UnwrapStrRev', 'UnwrapSubstr'],
             'SetOperation' => [
                 'UnwrapArrayDiff', 'UnwrapArrayDiffAssoc', 'UnwrapArrayDiffKey', 'UnwrapArrayDiffUassoc', 'UnwrapArrayDiffUkey',
                 'UnwrapArrayIntersect', 'UnwrapArrayIntersectAssoc', 'UnwrapArrayIntersectKey', 'UnwrapArrayIntersectUassoc', 'UnwrapArrayIntersectUkey',
