@@ -1,6 +1,17 @@
 CHANGELOG
 =========
 
+0.2.2
+-----
+
+* rename KillHintsEnum to RemedyEnum (like [Definition::remedies](https://github.com/infection/mutator/blob/master/src/Definition.php#L52))
+* add missing remedies
+
+0.2.1
+-----
+
+* add support for php 8.6
+
 0.2.0
 -----
 
