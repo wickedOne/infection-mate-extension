@@ -30,9 +30,9 @@
     "infection/infection": ">=0.35.12",
     "mikey179/vfsstream": "^1.6.12",
     "phpstan/phpstan": "^2.3.7",
-    "phpstan/phpstan-phpunit": "^2.1.2",
+    "phpstan/phpstan-phpunit": "^2.1.4",
     "phpunit/phpunit": "^10.0 || ^11.0 || ^12.0 || ^13.4.7",
-    "rector/rector": "^2.8.5"
+    "rector/rector": "^2.9.2"
   },
   "conflict": {
     "infection/infection": "<0.35.11"
